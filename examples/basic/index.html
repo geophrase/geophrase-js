@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script src="https://connect.geophrase.com/v1/geophrase.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <button id="geophrase-btn">Select Delivery Address</button>
+        <pre id="result"></pre>
+
+        <script>
+            var geo = new Geophrase({
+                key: '9-IA5ThFmSdh12gr4GATE4qRqewDMVgaHj29Gcq1YkQrg',
+                order_id: 'ORD-98765',  // Optional
+                phone: '9999999999',  // Optional
+                onSuccess: function(address) {
+                    document.getElementById('result').innerText = JSON.stringify(address, null, 2);
+                },
+                onError: function(error) { console.error("Error: ", error.message); },
+                onClose: function() { console.log("Closed"); }
+            });
+
+            document.getElementById('geophrase-btn').onclick = function(e) {
+                e.preventDefault();
+                geo.open();
+            };
+        </script>
+    </body>
+</html>
