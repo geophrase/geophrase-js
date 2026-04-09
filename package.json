@@ -1,0 +1,8 @@
+{
+  "name": "geophrase-js-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ]
+}

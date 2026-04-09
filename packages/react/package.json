@@ -1,0 +1,12 @@
+{
+  "name": "@geophrase/react",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "module",
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "dependencies": {
+    "@geophrase/core": "*"
+  }
+}
