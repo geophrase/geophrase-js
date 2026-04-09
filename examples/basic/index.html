@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <script src="https://connect.geophrase.com/v1/geophrase.js"></script>
-        <title></title>
     </head>
     <body>
         <button id="geophrase-btn">Select Delivery Address</button>
@@ -10,7 +9,7 @@
 
         <script>
             var geo = new Geophrase({
-                key: '9-IA5ThFmSdh12gr4GATE4qRqewDMVgaHj29Gcq1YkQrg',
+                key: 'YOUR_API_KEY',
                 order_id: 'ORD-98765',  // Optional
                 phone: '9999999999',  // Optional
                 onSuccess: function(address) {
