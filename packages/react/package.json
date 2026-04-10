@@ -8,6 +8,6 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "@geophrase/core": "workspace:*"
+    "@geophrase/core": "*"
   }
 }

@@ -139,11 +139,4 @@ class Geophrase {
     }
 }
 
-if (typeof window !== 'undefined') {
-    window.Geophrase = Geophrase;
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Geophrase;
-    module.exports.default = Geophrase;
-}
+export default Geophrase;

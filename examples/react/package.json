@@ -7,7 +7,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@geophrase/react": "workspace:*",
+    "@geophrase/react": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
