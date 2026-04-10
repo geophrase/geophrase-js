@@ -1,12 +1,13 @@
 {
   "name": "@geophrase/react",
   "version": "1.0.0",
+  "description": "React and Next.js hooks for the Geophrase Connect SDK",
   "main": "src/index.js",
   "type": "module",
   "peerDependencies": {
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "@geophrase/core": "*"
+    "@geophrase/core": "workspace:*"
   }
 }
