@@ -2,13 +2,13 @@
 
 The official JavaScript library for Geophrase Connect. This repository contains the tools needed to integrate the Geophrase address selector into any web-based checkout flow to drastically reduce Return to Origin (RTO) costs.
 
-Explore fully working demos in the `/examples` directory.
+Explore fully working demos for Vanilla JS, React, and Next.js in the `/examples` directory.
 
 ---
 
 ## ⚡ Quick Start: Vanilla JavaScript (HTML)
 
-The `@geophrase/core` package is the fastest way to integrate Geophrase into any website, regardless of the underlying framework (WordPress, Shopify, custom HTML, etc.).
+The fastest way to integrate Geophrase into any standard website (WordPress, Shopify, custom HTML, etc.).
 
 ### 1. Include the Script
 Add the Geophrase Connect script to your `<head>` or `<body>`.
@@ -49,7 +49,54 @@ Create an instance of `Geophrase` with your publishable key and order details. B
 </script>
 ```
 
-### Configuration Options
+---
+
+## ⚛️ React / Next.js
+
+The `@geophrase/react` package provides native hooks for seamless integration into modern single-page applications.
+
+### 1. Install the Package
+
+```bash
+npm install @geophrase/react
+```
+
+### 2. Use the Hook
+Import the `useGeophrase` hook and attach it to your checkout button.
+
+*(Note: If you are using the Next.js App Router, ensure the component utilizing this hook is marked with `"use client";` at the top of the file).*
+
+```javascript
+import { useState } from 'react';
+import { useGeophrase } from '@geophrase/react';
+
+export default function Checkout() {
+  const [result, setResult] = useState(null);
+
+  const { open } = useGeophrase({
+    key: 'YOUR_PUBLIC_API_KEY',
+    order_id: 'ORD-98765',
+    phone: '9999999999',
+    onSuccess: (address) => {
+      console.log("Address confirmed:", address.phrase);
+      setResult(address);
+    },
+    onError: (error) => console.error("Error: ", error.message),
+    onClose: () => console.log("User closed the widget.")
+  });
+
+  return (
+    <div>
+      <button onClick={open}>Select Delivery Address</button>
+      {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
+    </div>
+  );
+}
+```
+
+---
+
+## Configuration Options
 
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -59,11 +106,6 @@ Create an instance of `Geophrase` with your publishable key and order details. B
 | `onSuccess` | `function` | **Yes** | Called when the user successfully resolves an address. Returns the `address` object. |
 | `onError` | `function` | Optional | Called if the API fails or a network error occurs. Returns an `error` object. |
 | `onClose` | `function` | Optional | Called when the user closes the modal without completing the flow. |
-
----
-
-## ⚛️ React / Next.js (Coming Soon)
-*The `@geophrase/react` package is currently in development. It will provide native hooks and components for seamless integration into modern single-page applications.*
 
 ---
 
