@@ -1,4 +1,10 @@
 /.idea/
-node_modules/
 compose.yaml
-examples/nextjs/.next/
+npm-debug.log*
+node_modules/
+.next/
+dist/
+build/
+.vite/
+.env
+.env.local
