@@ -1,6 +1,6 @@
 # Geophrase JS SDK
 
-The official JavaScript library for Geophrase Connect. This repository contains the tools needed to integrate the Geophrase address selector into any web-based checkout flow to drastically reduce Return to Origin (RTO) costs.
+The official JavaScript library for Geophrase Connect. This repository contains the tools needed to integrate the Geophrase address selector into any web-based checkout flow to reduce Return to Origin (RTO) costs.
 
 Explore fully working demos for Vanilla JS, React, and Next.js in the `/examples` directory.
 
@@ -14,11 +14,11 @@ The fastest way to integrate Geophrase into any standard website (WordPress, Sho
 Add the Geophrase Connect script to your `<head>` or `<body>`.
 
 ```html
-<script src="[https://connect.geophrase.com/v1/geophrase.js](https://connect.geophrase.com/v1/geophrase.js)"></script>
+<script src="https://connect.geophrase.com/v1/geophrase.js"></script>
 ```
 
 ### 2. Initialize and Open
-Create an instance of `Geophrase` with your publishable key and order details. Bind the `.open()` method to your checkout button.
+Create an instance of `Geophrase` with your API Key and optionally order details. Bind the `.open()` method to your checkout button.
 
 ```html
 <button id="geophrase-btn">Select Delivery Address</button>
@@ -26,8 +26,8 @@ Create an instance of `Geophrase` with your publishable key and order details. B
 <script>
     const geo = new Geophrase({
         key: 'YOUR_PUBLIC_API_KEY',
-        order_id: 'ORD-98765',
-        phone: '9999999999',
+        order_id: 'ORD-98765',  // Optional
+        phone: '9999999999',  // Optional - to prefill the account phone number
         
         onSuccess: function(address) {
             console.log("Address confirmed:", address.phrase);
@@ -74,9 +74,8 @@ export default function Checkout() {
   const [result, setResult] = useState(null);
 
   const { open } = useGeophrase({
-    key: 'YOUR_PUBLIC_API_KEY',
-    order_id: 'ORD-98765',
-    phone: '9999999999',
+    order_id: 'ORD-98765', // Optional
+    phone: '9999999999',   // Optional - to prefill the account phone number
     onSuccess: (address) => {
       console.log("Address confirmed:", address.phrase);
       setResult(address);
@@ -134,4 +133,8 @@ export default function Checkout() {
 ---
 
 ## Security Note
-The `key` used in the frontend configuration is your **Publishable Key**. It is completely safe to expose this key in your client-side HTML or JavaScript. Never put your Secret Key in frontend code.
+The `key` used in the frontend configuration is your **API Key**. While it is completely safe to expose this key in your client-side HTML or JavaScript, you must protect it from unauthorized use via your Geophrase Business Dashboard.
+
+**Security Best Practices:**
+* **Web Applications:** Always secure your key by whitelisting your authorized origin URLs in the dashboard.
+* **Platform Separation:** Never use a single API key across multiple platforms. If you are also deploying a mobile app, generate a separate API key and apply platform-specific restrictions (e.g., Android Package Name or iOS Bundle ID).
