@@ -2,6 +2,8 @@
 
 The official JavaScript library for Geophrase Connect. This repository contains the tools needed to integrate the Geophrase address selector into any web-based checkout flow to reduce Return to Origin (RTO) costs.
 
+📖 **[Read the full documentation and integration guide at business.geophrase.com/docs](https://business.geophrase.com/docs)**
+
 Explore fully working demos for Vanilla JS, React, and Next.js in the `/examples` directory.
 
 ---
@@ -74,6 +76,7 @@ export default function Checkout() {
   const [result, setResult] = useState(null);
 
   const { open } = useGeophrase({
+    key: 'YOUR_PUBLIC_API_KEY',
     order_id: 'ORD-98765', // Optional
     phone: '9999999999',   // Optional - to prefill the account phone number
     onSuccess: (address) => {
@@ -133,7 +136,7 @@ export default function Checkout() {
 ---
 
 ## Security Note
-The `key` used in the frontend configuration is your **API Key**. While it is completely safe to expose this key in your client-side HTML or JavaScript, you must protect it from unauthorized use via your Geophrase Business Dashboard.
+The `key` used in the frontend configuration is your **API Key**. Because this key is designed to be exposed in your client-side HTML or JavaScript, an unrestricted key is a security risk. You must actively protect it from unauthorized use by configuring restrictions in your Geophrase Business Dashboard.
 
 **Security Best Practices:**
 * **Web Applications:** Always secure your key by whitelisting your authorized origin URLs in the dashboard.
