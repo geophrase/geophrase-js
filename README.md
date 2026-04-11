@@ -27,9 +27,9 @@ Create an instance of `Geophrase` with your API Key and optionally order details
 
 <script>
     const geo = new Geophrase({
-        key: 'YOUR_PUBLIC_API_KEY',
+        key: 'YOUR_API_KEY',
         order_id: 'ORD-98765',  // Optional
-        phone: '9999999999',  // Optional - to prefill the account phone number
+        phone: '9999999999',    // Optional - to prefill the account phone number
         
         onSuccess: function(address) {
             console.log("Address confirmed:", address.phrase);
@@ -76,7 +76,7 @@ export default function Checkout() {
   const [result, setResult] = useState(null);
 
   const { open } = useGeophrase({
-    key: 'YOUR_PUBLIC_API_KEY',
+    key: 'YOUR_API_KEY',
     order_id: 'ORD-98765', // Optional
     phone: '9999999999',   // Optional - to prefill the account phone number
     onSuccess: (address) => {
@@ -112,7 +112,7 @@ export default function Checkout() {
   const [result, setResult] = useState<GeophraseAddress | null>(null);
 
   const { open } = useGeophrase({
-    key: 'YOUR_PUBLIC_API_KEY',
+    key: 'YOUR_API_KEY',
     onSuccess: (address) => setResult(address)
   });
 

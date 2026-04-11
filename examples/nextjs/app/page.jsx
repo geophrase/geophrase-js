@@ -9,7 +9,7 @@ export default function Page() {
     const { open } = useGeophrase({
         key: 'YOUR_API_KEY',
         order_id: 'ORD-NEXT-987', // Optional
-        phone: '9999999999',      // Optional
+        phone: '9999999999',      // Optional - to prefill the account phone number
         onSuccess: (address) => setResult(address),
         onError: (error) => console.error("Error: ", error.message),
         onClose: () => console.log("Closed")
