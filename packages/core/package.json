@@ -1,8 +1,8 @@
 {
   "name": "@geophrase/core",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "The core vanilla JavaScript library for Geophrase Connect.",
-  "homepage": "https://github.com/geophrase/geophrase-js",
+  "homepage": "https://business.geophrase.com/docs",
   "repository": {
     "type": "git",
     "url": "https://github.com/geophrase/geophrase-js.git"
