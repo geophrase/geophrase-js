@@ -1,6 +1,17 @@
 {
   "name": "@geophrase/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
+  "description": "The core vanilla JavaScript library for Geophrase Connect.",
+  "keywords": [
+    "javascript",
+    "address",
+    "india",
+    "rto",
+    "ecommerce",
+    "checkout",
+    "logistics",
+    "geocoding"
+  ],
   "type": "module",
   "main": "src/index.js",
   "types": "index.d.ts",

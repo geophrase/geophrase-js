@@ -1,7 +1,17 @@
 {
   "name": "@geophrase/react",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "React and Next.js hooks for the Geophrase Connect SDK",
+  "keywords": [
+    "react",
+    "nextjs",
+    "hooks",
+    "address",
+    "india",
+    "rto",
+    "ecommerce",
+    "checkout"
+  ],
   "main": "src/index.js",
   "types": "index.d.ts",
   "files": [
