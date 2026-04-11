@@ -1,6 +1,6 @@
 {
   "name": "@geophrase/react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React and Next.js hooks for the Geophrase Connect SDK",
   "main": "src/index.js",
   "types": "index.d.ts",

@@ -94,6 +94,30 @@ export default function Checkout() {
 }
 ```
 
+### 📘 TypeScript Support
+
+The `@geophrase/react` and `@geophrase/core` packages ship with native TypeScript definitions.
+
+When storing the resolved address in React state, simply import the `GeophraseAddress` interface and pass it as a generic to `useState` to prevent type inference errors:
+
+```tsx
+import { useState } from 'react';
+import { useGeophrase } from '@geophrase/react';
+import { GeophraseAddress } from '@geophrase/core';
+
+export default function Checkout() {
+  // Explicitly type the state to accept the address object
+  const [result, setResult] = useState<GeophraseAddress | null>(null);
+
+  const { open } = useGeophrase({
+    key: 'YOUR_PUBLIC_API_KEY',
+    onSuccess: (address) => setResult(address)
+  });
+
+  // ...
+}
+```
+
 ---
 
 ## Configuration Options
