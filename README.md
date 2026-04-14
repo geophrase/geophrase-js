@@ -55,7 +55,7 @@ Create an instance of `Geophrase` with your API Key and optionally order details
 
 ## ⚛️ React / Next.js
 
-The `@geophrase/react` package provides native hooks for seamless integration into modern single-page applications.
+The `@geophrase/react` package provides native hooks for seamless integration into any React application.
 
 ### 1. Install the Package
 
