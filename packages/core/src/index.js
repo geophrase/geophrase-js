@@ -97,18 +97,27 @@ class Geophrase {
     async _handleMessage(event) {
         if (event.origin !== this.widgetOrigin) return;
 
-        if (event.data?.type === 'GEOPHRASE_CLOSE_WIDGET') {
+        let data = event.data;
+        if (typeof data === 'string') {
+            try {
+                data = JSON.parse(data);
+            } catch (e) {
+                return;
+            }
+        }
+
+        if (data?.type === 'GEOPHRASE_CLOSE_WIDGET') {
             this.close();
             if (this.onClose) this.onClose();
         }
 
-        if (event.data?.type === 'GEOPHRASE_RESOLUTION_TOKEN') {
+        if (data?.type === 'GEOPHRASE_RESOLUTION_TOKEN') {
             this.close();
             try {
                 const response = await fetch(`${this.apiBase}/business/resolve/`, {
                     method: "POST",
                     headers: { "X-API-Key": this.apiKey, "Content-Type": "application/json" },
-                    body: JSON.stringify({ token: event.data.token }),
+                    body: JSON.stringify({ token: data.token }),
                 });
 
                 if (!response.ok) {
@@ -123,8 +132,8 @@ class Geophrase {
                     return;
                 }
 
-                const data = await response.json();
-                if (this.onSuccess) this.onSuccess(data);
+                const responseData = await response.json();
+                if (this.onSuccess) this.onSuccess(responseData);
 
             } catch (error) {
                 console.error("Geophrase Resolution Error:", error);
