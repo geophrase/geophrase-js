@@ -1,6 +1,6 @@
 {
   "name": "@geophrase/react",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "React and Next.js hooks for the Geophrase Connect SDK",
   "homepage": "https://business.geophrase.com/docs",
   "repository": {
