@@ -32,6 +32,6 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "@geophrase/core": "*"
+    "@geophrase/core": "^1.0.6"
   }
 }

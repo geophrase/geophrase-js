@@ -1,8 +1,11 @@
 class Geophrase {
     constructor(options = {}) {
-        if (!options.key || typeof document === 'undefined') {
-            if (typeof document !== 'undefined') console.error("Geophrase: 'key' is required.");
-            return;
+        // 1. Strict Constructor Validation
+        if (!options.key) {
+            throw new Error("Geophrase: 'key' is required.");
+        }
+        if (typeof document === 'undefined') {
+            return; // SSR safe no-op
         }
 
         this.apiKey = options.key;
@@ -65,6 +68,8 @@ class Geophrase {
         overlay.appendChild(iframe);
         document.body.appendChild(overlay);
 
+        // Prevent duplicate listeners
+        window.removeEventListener('message', this._boundHandleMessage);
         window.addEventListener('message', this._boundHandleMessage);
     }
 
@@ -113,11 +118,17 @@ class Geophrase {
 
         if (data?.type === 'GEOPHRASE_RESOLUTION_TOKEN') {
             this.close();
+
+            // 5. Critical API Timeout protection
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+
             try {
                 const response = await fetch(`${this.apiBase}/business/resolve/`, {
                     method: "POST",
                     headers: { "X-API-Key": this.apiKey, "Content-Type": "application/json" },
                     body: JSON.stringify({ token: data.token }),
+                    signal: controller.signal
                 });
 
                 if (!response.ok) {
@@ -140,9 +151,11 @@ class Geophrase {
                 if (this.onError) {
                     this.onError({
                         type: 'NETWORK_ERROR',
-                        message: error.message || 'Failed to connect to Geophrase API'
+                        message: error.name === 'AbortError' ? 'Geophrase API request timed out' : error.message
                     });
                 }
+            } finally {
+                clearTimeout(timeoutId);
             }
         }
     }

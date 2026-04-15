@@ -30,7 +30,7 @@ Create an instance of `Geophrase` with your API Key and optionally order details
         key: 'YOUR_API_KEY',
         order_id: 'ORD-98765',  // Optional
         phone: '9999999999',    // Optional - to prefill the account phone number
-        
+
         onSuccess: function(address) {
             console.log("Address confirmed:", address.phrase);
             // Proceed to payment gateway
@@ -73,26 +73,26 @@ import { useState } from 'react';
 import { useGeophrase } from '@geophrase/react';
 
 export default function Checkout() {
-  const [result, setResult] = useState(null);
+    const [result, setResult] = useState(null);
 
-  const { open } = useGeophrase({
-    key: 'YOUR_API_KEY',
-    order_id: 'ORD-98765', // Optional
-    phone: '9999999999',   // Optional - to prefill the account phone number
-    onSuccess: (address) => {
-      console.log("Address confirmed:", address.phrase);
-      setResult(address);
-    },
-    onError: (error) => console.error("Error: ", error.message),
-    onClose: () => console.log("User closed the widget.")
-  });
+    const { open } = useGeophrase({
+        key: 'YOUR_API_KEY',
+        order_id: 'ORD-98765', // Optional
+        phone: '9999999999',   // Optional - to prefill the account phone number
+        onSuccess: (address) => {
+            console.log("Address confirmed:", address.phrase);
+            setResult(address);
+        },
+        onError: (error) => console.error("Error: ", error.message),
+        onClose: () => console.log("User closed the widget.")
+    });
 
-  return (
-    <div>
-      <button onClick={open}>Select Delivery Address</button>
-      {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
-    </div>
-  );
+    return (
+        <div>
+            <button onClick={open}>Select Delivery Address</button>
+            {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
+        </div>
+    );
 }
 ```
 
@@ -108,15 +108,36 @@ import { useGeophrase } from '@geophrase/react';
 import { GeophraseAddress } from '@geophrase/core';
 
 export default function Checkout() {
-  // Explicitly type the state to accept the address object
-  const [result, setResult] = useState<GeophraseAddress | null>(null);
+    // Explicitly type the state to accept the address object
+    const [result, setResult] = useState<GeophraseAddress | null>(null);
 
-  const { open } = useGeophrase({
-    key: 'YOUR_API_KEY',
-    onSuccess: (address) => setResult(address)
-  });
+    const { open } = useGeophrase({
+        key: 'YOUR_API_KEY',
+        onSuccess: (address) => setResult(address)
+    });
 
-  // ...
+    // ...
+}
+```
+
+---
+
+## 📦 Data Structures
+
+### Example Success Response (`onSuccess`)
+The SDK resolves and returns the following structure:
+
+```json
+{
+  "phrase": "blue-tiger-lake",
+  "rawData": {
+    "addressLine1": "House No 12, GS Road",
+    "city": "Guwahati",
+    "state": "Assam",
+    "postalCode": "781005",
+    "latitude": 26.1445,
+    "longitude": 91.7362
+  }
 }
 ```
 

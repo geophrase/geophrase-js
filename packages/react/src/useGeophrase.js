@@ -6,16 +6,12 @@ import Geophrase from '@geophrase/core';
 export const useGeophrase = (options = {}) => {
     const geoInstance = useRef(null);
 
-    // 1. Keep a mutable reference to the latest callbacks
-    // This prevents React from destroying/recreating the iframe just
-    // because the parent component re-rendered and created a new function.
     const savedCallbacks = useRef({
         onSuccess: options.onSuccess,
         onError: options.onError,
         onClose: options.onClose
     });
 
-    // 2. Update the callbacks on every render without triggering the useEffect
     useEffect(() => {
         savedCallbacks.current = {
             onSuccess: options.onSuccess,
@@ -24,16 +20,18 @@ export const useGeophrase = (options = {}) => {
         };
     });
 
-    // 3. Manage the Vanilla JS Lifecycle safely
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        // Instantiate the vanilla class EXACTLY once per mount
+        // 1. Strict Developer Warning
+        if (!options.key) {
+            console.warn("Geophrase: 'key' is required to initialize the widget.");
+        }
+
         geoInstance.current = new Geophrase({
             key: options.key,
             order_id: options.order_id,
             phone: options.phone,
-            // Pass wrapper functions to always execute the latest React state
             onSuccess: (data) => {
                 if (savedCallbacks.current.onSuccess) savedCallbacks.current.onSuccess(data);
             },
@@ -45,19 +43,14 @@ export const useGeophrase = (options = {}) => {
             }
         });
 
-        // Cleanup: Destroy the DOM elements if the React component unmounts
-        // This perfectly handles React 18's Strict Mode double-mount behavior
         return () => {
             if (geoInstance.current) {
                 geoInstance.current.destroy();
                 geoInstance.current = null;
             }
         };
-
-        // We only re-run this effect if the CORE configuration changes
     }, [options.key, options.order_id, options.phone]);
 
-    // 4. Provide a stable reference to the open method
     const open = useCallback(() => {
         if (geoInstance.current) {
             geoInstance.current.open();
@@ -66,5 +59,12 @@ export const useGeophrase = (options = {}) => {
         }
     }, []);
 
-    return { open };
+    // 2. Fixed missing close implementation
+    const close = useCallback(() => {
+        if (geoInstance.current) {
+            geoInstance.current.close();
+        }
+    }, []);
+
+    return { open, close };
 };
