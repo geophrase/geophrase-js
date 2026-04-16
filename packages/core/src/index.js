@@ -24,7 +24,12 @@ class Geophrase {
 
         this._boundHandleMessage = this._handleMessage.bind(this);
 
-        this._injectDOM();
+        // 2. Pre-compute the URL, but DO NOT inject or load it yet
+        const url = new URL(this.widgetOrigin);
+        url.searchParams.append('api-key', this.apiKey);
+        if (this.orderId) url.searchParams.append('order-id', this.orderId);
+        if (this.phone) url.searchParams.append('phone', this.phone);
+        this.widgetUrl = url.toString();
     }
 
     _injectDOM() {
@@ -59,12 +64,6 @@ class Geophrase {
         iframe.id = this.iframeId;
         iframe.allow = "geolocation";
 
-        const url = new URL(this.widgetOrigin);
-        url.searchParams.append('api-key', this.apiKey);
-        if (this.orderId) url.searchParams.append('order-id', this.orderId);
-        if (this.phone) url.searchParams.append('phone', this.phone);
-        iframe.src = url.toString();
-
         overlay.appendChild(iframe);
         document.body.appendChild(overlay);
 
@@ -74,6 +73,13 @@ class Geophrase {
     }
 
     open() {
+        // 3. Lazy-load the DOM and iframe src exactly when clicked
+        this._injectDOM();
+        const iframe = document.getElementById(this.iframeId);
+        if (iframe && !iframe.hasAttribute('src')) {
+            iframe.src = this.widgetUrl;
+        }
+
         document.body.style.overflow = 'hidden';
         document.getElementById(this.overlayId)?.classList.add('geophrase-active');
     }
@@ -83,7 +89,7 @@ class Geophrase {
         document.getElementById(this.overlayId)?.classList.remove('geophrase-active');
 
         const iframe = document.getElementById(this.iframeId);
-        if (iframe) iframe.src = iframe.src;
+        if (iframe) iframe.removeAttribute('src'); // 4. Kill the background session safely
     }
 
     destroy() {
