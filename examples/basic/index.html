@@ -1,28 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <script src="https://connect.geophrase.com/v1/geophrase.js"></script>
-    </head>
-    <body>
-        <button id="geophrase-btn">Select Delivery Address</button>
-        <pre id="result"></pre>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://connect.geophrase.com/v1/geophrase.js" defer></script>
+</head>
+<body>
+    <button id="geophrase-btn">Select Exact Delivery Location</button>
 
-        <script>
+    <pre id="address-display"></pre>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
             const geo = new Geophrase({
                 key: 'YOUR_API_KEY',
-                order_id: 'ORD-98765',  // Optional
-                phone: '9999999999',    // Optional - to prefill the account phone number
+                order_id: 'ORD-8786', // Optional
+                phone: '9999999999', // Optional - to prefill the account phone number
+
                 onSuccess: function(address) {
-                    document.getElementById('result').innerText = JSON.stringify(address, null, 2);
+                    document.getElementById('address-display').textContent = JSON.stringify(address, null, 2);
                 },
-                onError: function(error) { console.error("Error: ", error.message); },
-                onClose: function() { console.log("Closed"); }
+                onError: function(error) {
+                    console.error("Geophrase encountered an error:", error.message);
+                },
+                onClose: function() {
+                    console.log("User closed the widget without selecting an address.");
+                }
             });
 
             document.getElementById('geophrase-btn').onclick = function(e) {
                 e.preventDefault();
                 geo.open();
             };
-        </script>
-    </body>
+
+        });
+    </script>
+</body>
 </html>
