@@ -1,16 +1,42 @@
-# React + Vite
+# Geophrase React Example
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains a minimal React application demonstrating how to integrate the `@geophrase/react` SDK into a modern React application.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Before running this example, you need a Geophrase API key.
+1. Log in to your [Geophrase Business Dashboard](https://business.geophrase.com).
+2. Generate a new API Key.
+3. **Security Step:** Ensure you whitelist `http://localhost:5173` (or your specific local dev port) in the dashboard so the key is authorized for local testing.
 
-## React Compiler
+## Setup Instructions
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Install dependencies**
+   Navigate to this directory in your terminal and install the required packages:
+   ```bash
+   npm install
+   ```
 
-## Expanding the ESLint configuration
+2. **Configure your API Key**
+   Open `src/App.jsx` and replace the placeholder API key with your actual key:
+   ```javascript
+   const { open } = useGeophrase({
+     key: 'YOUR_API_KEY_HERE', // <--- Add your key here
+     // ...
+   });
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. **Run the development server**
+   Start the local Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+4. **Test the integration**
+   Open your browser to the local URL provided by Vite (usually `http://localhost:5173`). Click the **"Select Delivery Address"** button to open the widget, complete the flow, and view the structured JSON payload returned to the application.
+
+## Available Scripts
+
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the app for production.
+- `npm run preview`: Previews the production build locally.
