@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Geophrase Next.js Example
 
-## Getting Started
+This directory contains a minimal [Next.js](https://nextjs.org/) application demonstrating how to integrate the `@geophrase/react` SDK using the modern App Router and TypeScript.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Before running this example, you need a Geophrase API key.
+1. Log in to your [Geophrase Business Dashboard](https://business.geophrase.com).
+2. Generate a new API Key.
+3. **Security Step:** Ensure you whitelist `http://localhost:3000` (the default Next.js local port) in the dashboard so the key is authorized for local testing.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Install dependencies**
+   Navigate to this directory in your terminal and install the required packages:
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Configure your API Key**
+   Open your main page file (typically `app/page.tsx` or `src/app/page.tsx`) and replace the placeholder API key with your actual key:
+   ```tsx
+   const { open } = useGeophrase({
+       key: 'YOUR_API_KEY', // <--- Add your actual key here
+       order_id: 'ORD-98765',
+       // ...
+   });
+   ```
 
-## Learn More
+3. **Run the development server**
+   Start the local Next.js development server:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Test the integration**
+   Open your browser to [http://localhost:3000](http://localhost:3000). Click the **"Select Exact Delivery Location"** button to open the widget, complete the flow, and view the structured JSON payload returned to the application.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Next.js Implementation Details
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* **Client Components:** Because the `@geophrase/react` SDK relies on interactive browser APIs (like window events and DOM injection), the component calling `useGeophrase` must be a Client Component. Ensure you have the `"use client";` directive at the absolute top of the file.
+* **TypeScript Support:** This example utilizes the `@geophrase/core` package to import the `GeophraseAddress` interface, allowing you to strictly type the JSON payload returned by the `onSuccess` callback.
 
-## Deploy on Vercel
+## Available Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the application for production.
+- `npm run start`: Starts a Next.js production server locally.
+- `npm run lint`: Runs ESLint to catch potential errors.
