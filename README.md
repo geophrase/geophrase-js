@@ -1,6 +1,6 @@
-# Geophrase JS SDK
+# Geophrase Connect JS SDK
 
-The official JavaScript library for Geophrase Connect. This repository contains the tools needed to integrate the Geophrase address selector into any web-based checkout flow to reduce Return to Origin (RTO) costs.
+The official JavaScript library for Geophrase Connect. This repository contains the SDKs and UI components needed to drop the Geophrase address selector into your existing custom apps or checkout flows in minutes, capturing perfectly structured Indian addresses and coordinates to eliminate Return to Origin (RTO) costs.
 
 📖 **[Read the full documentation and integration guide at business.geophrase.com/docs](https://business.geophrase.com/docs)**
 
@@ -10,44 +10,47 @@ Explore fully working demos for Vanilla JS, React, and Next.js in the `/examples
 
 ## ⚡ Quick Start: Vanilla JavaScript (HTML)
 
-The fastest way to integrate Geophrase into any standard website (WordPress, Shopify, custom HTML, etc.).
+The fastest way to integrate Geophrase into custom web applications, headless architectures, or legacy web portals.
 
 ### 1. Include the Script
-Add the Geophrase Connect script to your `<head>` or `<body>`.
+Add the Geophrase Connect script to your `<head>`. Using the `defer` attribute is highly recommended to prevent render-blocking.
 
 ```html
-<script src="https://connect.geophrase.com/v1/geophrase.js"></script>
+<script src="https://connect.geophrase.com/v1/geophrase.js" defer></script>
 ```
 
 ### 2. Initialize and Open
-Create an instance of `Geophrase` with your API Key and optionally order details. Bind the `.open()` method to your checkout button.
+Create an instance of `Geophrase` with your API Key and optionally order details. Bind the `.open()` method to your checkout button after the DOM has loaded.
 
 ```html
 <button id="geophrase-btn">Select Delivery Address</button>
 
 <script>
-    const geo = new Geophrase({
-        key: 'YOUR_API_KEY',
-        order_id: 'ORD-98765',  // Optional
-        phone: '9999999999',    // Optional - to prefill the account phone number
+    // Wait for the HTML to parse and the deferred SDK to execute
+    document.addEventListener('DOMContentLoaded', function() {
+        const geo = new Geophrase({
+            key: 'YOUR_API_KEY',
+            order_id: 'ORD-98765',  // Optional
+            phone: '9999999999',    // Optional - to prefill the account phone number
 
-        onSuccess: function(address) {
-            console.log("Address confirmed:", address.phrase);
-            // Proceed to payment gateway
-        },
-        onError: function(error) {
-            console.error("Geophrase encountered an error:", error.message);
-        },
-        onClose: function() {
-            console.log("User closed the widget without selecting an address.");
-        }
+            onSuccess: function(address) {
+                console.log("Address confirmed:", address.phrase);
+                // Proceed to routing or payment gateway
+            },
+            onError: function(error) {
+                console.error("Geophrase encountered an error:", error.message);
+            },
+            onClose: function() {
+                console.log("User closed the widget without selecting an address.");
+            }
+        });
+
+        // Open the component when the user clicks your action button
+        document.getElementById('geophrase-btn').onclick = function(e) {
+            e.preventDefault();
+            geo.open();
+        };
     });
-
-    // Open the widget when the user clicks your checkout button
-    document.getElementById('geophrase-btn').onclick = function(e) {
-        e.preventDefault();
-        geo.open();
-    };
 </script>
 ```
 
@@ -55,7 +58,7 @@ Create an instance of `Geophrase` with your API Key and optionally order details
 
 ## ⚛️ React / Next.js
 
-The `@geophrase/react` package provides native hooks for seamless integration into any React application.
+The `@geophrase/react` package provides native hooks for a seamless integration into any React application.
 
 ### 1. Install the Package
 
@@ -84,7 +87,7 @@ export default function Checkout() {
             setResult(address);
         },
         onError: (error) => console.error("Error: ", error.message),
-        onClose: () => console.log("User closed the widget.")
+        onClose: () => console.log("User closed the component.")
     });
 
     return (
@@ -125,19 +128,25 @@ export default function Checkout() {
 ## 📦 Data Structures
 
 ### Example Success Response (`onSuccess`)
-The SDK resolves and returns the following structure:
+The SDK resolves and returns the following exact structure upon completion:
 
 ```json
 {
-  "phrase": "blue-tiger-lake",
-  "rawData": {
-    "addressLine1": "House No 12, GS Road",
-    "city": "Guwahati",
-    "state": "Assam",
-    "postalCode": "781005",
-    "latitude": 26.1445,
-    "longitude": 91.7362
-  }
+  "phrase": "eid-hiu-sac",
+  "verified_account_mobile_num": "9999999999",
+  "address_type": "OFFICE",
+  "contact_full_name": "Rohan",
+  "contact_mobile_num": "9999999999",
+  "address_line_one": "Floor 99",
+  "address_line_two": "GTB Building",
+  "landmark": "Map: gphr.in/eid-hiu-sac",
+  "city": "Delhi",
+  "state": "Delhi",
+  "postal_code": 110007,
+  "latitude": 16.241303391104953,
+  "longitude": 99.7836155238037,
+  "digi_pin": "202-P85-M87C",
+  "qr_code": "https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png"
 }
 ```
 
@@ -156,9 +165,9 @@ The SDK resolves and returns the following structure:
 
 ---
 
-## Security Note
-The `key` used in the frontend configuration is your **API Key**. Because this key is designed to be exposed in your client-side HTML or JavaScript, an unrestricted key is a security risk. You must actively protect it from unauthorized use by configuring restrictions in your Geophrase Business Dashboard.
+## 🔒 Security Note
+The `key` used in the frontend configuration is your **API Key**. Because this key must be exposed in your client-side HTML or JavaScript, an unrestricted key is a security risk. You must actively protect it from unauthorized use by configuring restrictions in your Geophrase Business Dashboard.
 
 **Security Best Practices:**
-* **Web Applications:** Always secure your key by whitelisting your authorized origin URLs in the dashboard.
+* **Web Applications:** Always secure your key immediately by whitelisting your authorized origin URLs (e.g., `https://checkout.yourdomain.com`) in the dashboard.
 * **Platform Separation:** Never use a single API key across multiple platforms. If you are also deploying a mobile app, generate a separate API key and apply platform-specific restrictions (e.g., Android Package Name or iOS Bundle ID).
