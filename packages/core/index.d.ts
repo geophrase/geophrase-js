@@ -3,6 +3,10 @@ export interface GeophraseAddress {
     [key: string]: any;
 }
 
+export interface GeophraseToken {
+    token: string;
+}
+
 export interface GeophraseError {
     type: 'API_ERROR' | 'NETWORK_ERROR';
     status?: number;
@@ -10,10 +14,12 @@ export interface GeophraseError {
 }
 
 export interface GeophraseOptions {
-    key: string;
+    mode?: 'client' | 'server';
+    theme?: 'light' | 'dark' | 'system';
+    key?: string;
     order_id?: string;
     phone?: string;
-    onSuccess: (address: GeophraseAddress) => void;
+    onSuccess: (result: GeophraseAddress | GeophraseToken) => void;
     onError?: (error: GeophraseError) => void;
     onClose?: () => void;
 }

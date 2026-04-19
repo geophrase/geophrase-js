@@ -1,16 +1,34 @@
 class Geophrase {
     constructor(options = {}) {
-        // 1. Strict Constructor Validation
-        if (!options.key) {
-            throw new Error("Geophrase: 'key' is required.");
-        }
         if (typeof document === 'undefined') {
             return; // SSR safe no-op
         }
 
-        this.apiKey = options.key;
+        // 1. Mode Validation
+        this.mode = options.mode || 'client'; // Defaults to the low-friction flow
+        if (!['client', 'server'].includes(this.mode)) {
+            throw new Error(`Geophrase: Invalid mode '${this.mode}'. Expected 'client' or 'server'.`);
+        }
+
+        // 2. Strict API Key Validation based on Mode
+        if (this.mode === 'client' && !options.key) {
+            throw new Error("Geophrase Error: 'key' is required when mode is 'client'.");
+        }
+
+        if (this.mode === 'server' && options.key) {
+            console.warn("Geophrase Warning: 'key' is ignored when mode is 'server'. Ensure you are not exposing a Secret Key in your frontend.");
+        }
+
+        this.apiKey = this.mode === 'client' ? options.key : null;
         this.orderId = options.order_id;
         this.phone = options.phone;
+
+        // 3. Theme Validation
+        this.theme = options.theme;
+        if (this.theme && !['light', 'dark', 'system'].includes(this.theme)) {
+            console.warn(`Geophrase Warning: Invalid theme '${this.theme}'. Falling back to default.`);
+            this.theme = null;
+        }
 
         this.onSuccess = options.onSuccess;
         this.onError = options.onError;
@@ -24,16 +42,20 @@ class Geophrase {
 
         this._boundHandleMessage = this._handleMessage.bind(this);
 
-        // 2. Pre-compute the URL, but DO NOT inject or load it yet
+        // 4. Pre-compute the secure URL (API Key is purposefully excluded)
         const url = new URL(this.widgetOrigin);
-        url.searchParams.append('api-key', this.apiKey);
         if (this.orderId) url.searchParams.append('order-id', this.orderId);
         if (this.phone) url.searchParams.append('phone', this.phone);
+        if (this.theme) url.searchParams.append('theme', this.theme);
+
         this.widgetUrl = url.toString();
     }
 
     _injectDOM() {
         if (document.getElementById(this.overlayId)) return;
+
+        // Replace these hex codes with the exact background colors of your Next.js app
+        const iframeBgColor = this.theme === 'dark' ? '#121212' : '#ffffff';
 
         if (!document.getElementById(this.styleId)) {
             const style = document.createElement('style');
@@ -46,7 +68,10 @@ class Geophrase {
                     opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
                 }
                 #${this.overlayId}.geophrase-active { opacity: 1; visibility: visible; }
-                #${this.iframeId} { width: 100%; height: 100%; border: none; background-color: #fff; }
+                
+                /* 2. Apply the pre-calculated solid background color */
+                #${this.iframeId} { width: 100%; height: 100%; border: none; background-color: ${iframeBgColor}; }
+                
                 @media (min-width: 768px) {
                     #${this.iframeId} {
                         width: 375px; height: 812px; max-height: 85vh;
@@ -67,13 +92,11 @@ class Geophrase {
         overlay.appendChild(iframe);
         document.body.appendChild(overlay);
 
-        // Prevent duplicate listeners
         window.removeEventListener('message', this._boundHandleMessage);
         window.addEventListener('message', this._boundHandleMessage);
     }
 
     open() {
-        // 3. Lazy-load the DOM and iframe src exactly when clicked
         this._injectDOM();
         const iframe = document.getElementById(this.iframeId);
         if (iframe && !iframe.hasAttribute('src')) {
@@ -89,7 +112,7 @@ class Geophrase {
         document.getElementById(this.overlayId)?.classList.remove('geophrase-active');
 
         const iframe = document.getElementById(this.iframeId);
-        if (iframe) iframe.removeAttribute('src'); // 4. Kill the background session safely
+        if (iframe) iframe.removeAttribute('src');
     }
 
     destroy() {
@@ -97,7 +120,6 @@ class Geophrase {
         if (overlay) overlay.remove();
 
         document.body.style.overflow = '';
-
         window.removeEventListener('message', this._boundHandleMessage);
 
         this.onSuccess = null;
@@ -110,11 +132,7 @@ class Geophrase {
 
         let data = event.data;
         if (typeof data === 'string') {
-            try {
-                data = JSON.parse(data);
-            } catch (e) {
-                return;
-            }
+            try { data = JSON.parse(data); } catch (e) { return; }
         }
 
         if (data?.type === 'GEOPHRASE_CLOSE_WIDGET') {
@@ -125,14 +143,23 @@ class Geophrase {
         if (data?.type === 'GEOPHRASE_RESOLUTION_TOKEN') {
             this.close();
 
-            // 5. Critical API Timeout protection
+            // 5. Enterprise Flow: Return the raw token immediately
+            if (this.mode === 'server') {
+                if (this.onSuccess) this.onSuccess({ token: data.token });
+                return;
+            }
+
+            // 6. Standard Flow: Perform client-side token resolution
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
 
             try {
                 const response = await fetch(`${this.apiBase}/business/resolve/`, {
                     method: "POST",
-                    headers: { "X-API-Key": this.apiKey, "Content-Type": "application/json" },
+                    headers: {
+                        "X-API-Key": this.apiKey,
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify({ token: data.token }),
                     signal: controller.signal
                 });
