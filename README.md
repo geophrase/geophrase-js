@@ -20,7 +20,9 @@ Add the Geophrase Connect script to your `<head>`. Using the `defer` attribute i
 ```
 
 ### 2. Initialize and Open
-Create an instance of `Geophrase` with your API Key and optionally order details. Bind the `.open()` method to your checkout button after the DOM has loaded.
+Create an instance of `Geophrase`. Bind the `.open()` method to your checkout button after the DOM has loaded.
+
+*Note: The example below uses the standard `client` mode, which requires your API key and returns the full address directly to the browser.*
 
 ```html
 <button id="geophrase-btn">Select Delivery Address</button>
@@ -29,13 +31,23 @@ Create an instance of `Geophrase` with your API Key and optionally order details
     // Wait for the HTML to parse and the deferred SDK to execute
     document.addEventListener('DOMContentLoaded', function() {
         const geo = new Geophrase({
-            key: 'YOUR_API_KEY',
-            order_id: 'ORD-98765',  // Optional
-            phone: '9999999999',    // Optional - to prefill the account phone number
+            // --- ARCHITECTURE FLOW ---
+            // 'client' (default): SDK resolves and returns the full address. Requires 'key'.
+            // 'server': SDK returns a secure token. Omit 'key'. Pass token to your backend to resolve.
+            mode: 'client', 
+            
+            key: 'YOUR_API_KEY',    // Required when mode is 'client'
+            
+            // --- OPTIONAL SETTINGS ---
+            theme: 'system',        // 'light', 'dark', or 'system'
+            order_id: 'ORD-98765',  // Your internal reference ID
+            phone: '9999999999',    // Prefill the account phone number
 
-            onSuccess: function(address) {
-                console.log("Address confirmed:", address.phrase);
-                // Proceed to routing or payment gateway
+            // --- CALLBACKS ---
+            onSuccess: function(result) {
+                // In 'client' mode, result is the full Address object
+                // In 'server' mode, result is { token: "..." }
+                console.log("Success:", result);
             },
             onError: function(error) {
                 console.error("Geophrase encountered an error:", error.message);
@@ -79,12 +91,14 @@ export default function Checkout() {
     const [result, setResult] = useState(null);
 
     const { open } = useGeophrase({
+        mode: 'client',
+        theme: 'system',
         key: 'YOUR_API_KEY',
-        order_id: 'ORD-98765', // Optional
-        phone: '9999999999',   // Optional - to prefill the account phone number
-        onSuccess: (address) => {
-            console.log("Address confirmed:", address.phrase);
-            setResult(address);
+        order_id: 'ORD-98765', 
+        phone: '9999999999',   
+        onSuccess: (data) => {
+            console.log("Success:", data);
+            setResult(data);
         },
         onError: (error) => console.error("Error: ", error.message),
         onClose: () => console.log("User closed the component.")
@@ -103,20 +117,21 @@ export default function Checkout() {
 
 The `@geophrase/react` and `@geophrase/core` packages ship with native TypeScript definitions.
 
-When storing the resolved address in React state, simply import the `GeophraseAddress` interface and pass it as a generic to `useState` to prevent type inference errors:
+When storing the resolved result in React state, you can type it against both the Address and Token payloads:
 
 ```tsx
 import { useState } from 'react';
 import { useGeophrase } from '@geophrase/react';
-import { GeophraseAddress } from '@geophrase/core';
+import { GeophraseAddress, GeophraseToken } from '@geophrase/core';
 
 export default function Checkout() {
-    // Explicitly type the state to accept the address object
-    const [result, setResult] = useState<GeophraseAddress | null>(null);
+    // Explicitly type the state to accept either the Address or Token object
+    const [result, setResult] = useState<GeophraseAddress | GeophraseToken | null>(null);
 
     const { open } = useGeophrase({
+        mode: 'client',
         key: 'YOUR_API_KEY',
-        onSuccess: (address) => setResult(address)
+        onSuccess: (data) => setResult(data)
     });
 
     // ...
@@ -125,10 +140,27 @@ export default function Checkout() {
 
 ---
 
+## Configuration Options
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `mode` | `string` | Optional | `'client'` (default) or `'server'`. Determines the architectural flow of the SDK. |
+| `key` | `string` | **Conditional** | Your Geophrase API key. **Required if `mode` is `'client'`.** Omit if using server mode. |
+| `theme` | `string` | Optional | `'light'`, `'dark'`, or `'system'`. Defaults to `'system'`. |
+| `order_id` | `string` | Optional | Your internal reference ID for this checkout session. |
+| `phone` | `string` | Optional | The customer's 10-digit phone number (pre-fills the widget). |
+| `onSuccess` | `function` | **Yes** | Called upon completion. Returns an `Address` object (`mode: 'client'`) or a `Token` object (`mode: 'server'`). |
+| `onError` | `function` | Optional | Called if the API fails or a network error occurs. Returns an `Error` object. |
+| `onClose` | `function` | Optional | Called when the user closes the modal without completing the flow. |
+
+---
+
 ## 📦 Data Structures
 
-### Example Success Response (`onSuccess`)
-The SDK resolves and returns the following exact structure upon completion:
+The shape of the data returned to your `onSuccess` callback depends entirely on the `mode` you configure.
+
+### 1. Client Mode Payload (Default)
+When `mode: 'client'`, the SDK automatically resolves the data and returns the full address object:
 
 ```json
 {
@@ -146,28 +178,26 @@ The SDK resolves and returns the following exact structure upon completion:
   "latitude": 16.241303391104953,
   "longitude": 99.7836155238037,
   "digi_pin": "202-P85-M87C",
-  "qr_code": "https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png"
+  "qr_code": "[https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png](https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png)"
 }
 ```
 
----
+### 2. Server Mode Payload (Token Exchange Flow)
+When `mode: 'server'`, the SDK safely halts before exposing any data to the frontend and returns a single-use token:
 
-## Configuration Options
-
-| Parameter | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `key` | `string` | **Yes** | Your Geophrase public API key. |
-| `order_id` | `string` | Optional | Your internal reference ID for this checkout session. |
-| `phone` | `string` | Optional | The customer's 10-digit phone number (pre-fills the widget). |
-| `onSuccess` | `function` | **Yes** | Called when the user successfully resolves an address. Returns the `address` object. |
-| `onError` | `function` | Optional | Called if the API fails or a network error occurs. Returns an `error` object. |
-| `onClose` | `function` | Optional | Called when the user closes the modal without completing the flow. |
+```json
+{
+  "token": "gphr_tok_5f8a9b2c1d4e..."
+}
+```
+*You must then pass this token to your backend server, where you can securely exchange it for the full address object using your Geophrase API Key.*
 
 ---
 
 ## 🔒 Security Note
-The `key` used in the frontend configuration is your **API Key**. Because this key must be exposed in your client-side HTML or JavaScript, an unrestricted key is a security risk. You must actively protect it from unauthorized use by configuring restrictions in your Geophrase Business Dashboard.
 
-**Security Best Practices:**
-* **Web Applications:** Always secure your key immediately by whitelisting your authorized origin URLs (e.g., `https://checkout.yourdomain.com`) in the dashboard.
-* **Platform Separation:** Never use a single API key across multiple platforms. If you are also deploying a mobile app, generate a separate API key and apply platform-specific restrictions (e.g., Android Package Name or iOS Bundle ID).
+**The Client-Side Flow (`mode: 'client'`):**
+The `key` used in the frontend configuration is your Geophrase API Key. Because this key is exposed in your client-side HTML or JavaScript, you **must** actively protect it from unauthorized use by configuring domain restrictions (e.g., whitelisting `https://checkout.yourdomain.com`) in your Geophrase Business Dashboard. You can generate multiple API keys in your dashboard; it is highly recommended to create a dedicated, uniquely restricted key for each frontend platform or application.
+
+**The Server-Side Flow (`mode: 'server'`):**
+While we use strict domain whitelisting to protect your API keys in client mode, the absolute best practice—if your application has a backend—is to keep your API keys entirely off the frontend. By using Server Mode, you omit the `key` parameter from the SDK completely. The widget will return a secure token to your frontend, which you then safely resolve from your own server using your API key.
