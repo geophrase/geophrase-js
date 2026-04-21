@@ -1,6 +1,6 @@
 # Geophrase React Example
 
-A minimal React application demonstrating how to integrate the `@geophrase/react` SDK. It runs in **server mode**, so you can get the widget working end-to-end in under a minute. **No API key required.**
+A minimal React application demonstrating how to integrate the `@geophrase/react` SDK. It runs in **server mode**, so you can get the widget working in under a minute. No API key required.
 
 ## Setup
 
