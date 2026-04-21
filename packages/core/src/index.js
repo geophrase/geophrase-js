@@ -1,16 +1,19 @@
 class Geophrase {
+    static _instanceCounter = 0;
+
     constructor(options = {}) {
         if (typeof document === 'undefined') {
-            return; // SSR safe no-op
+            this._isSSR = true;
+            return;
         }
 
-        // 1. Mode Validation
-        this.mode = options.mode || 'client'; // Defaults to the low-friction flow
+        // 1. Mode validation
+        this.mode = options.mode || 'client';
         if (!['client', 'server'].includes(this.mode)) {
             throw new Error(`Geophrase: Invalid mode '${this.mode}'. Expected 'client' or 'server'.`);
         }
 
-        // 2. Strict API Key Validation based on Mode
+        // 2. API key validation
         if (this.mode === 'client' && !options.key) {
             throw new Error("Geophrase Error: 'key' is required when mode is 'client'.");
         }
@@ -20,10 +23,10 @@ class Geophrase {
         }
 
         this.apiKey = this.mode === 'client' ? options.key : null;
-        this.orderId = options.order_id;
+        this.orderId = options.orderId;
         this.phone = options.phone;
 
-        // 3. Theme Validation
+        // 3. Theme validation
         this.theme = options.theme;
         if (this.theme && !['light', 'dark', 'system'].includes(this.theme)) {
             console.warn(`Geophrase Warning: Invalid theme '${this.theme}'. Falling back to default.`);
@@ -34,28 +37,58 @@ class Geophrase {
         this.onError = options.onError;
         this.onClose = options.onClose;
 
-        this.iframeId = 'geophrase-iframe-connect';
-        this.overlayId = 'geophrase-overlay-container';
-        this.styleId = 'geophrase-connect-styles';
-        this.widgetOrigin = 'https://connect.geophrase.com';
-        this.apiBase = 'https://api.geophrase.com';
+        // 4. Per-instance DOM IDs so multiple instances don't collide
+        const instanceId = ++Geophrase._instanceCounter;
+        this.iframeId = `geophrase-iframe-${instanceId}`;
+        this.overlayId = `geophrase-overlay-${instanceId}`;
+        this.styleId = `geophrase-styles-${instanceId}`;
+
+        // 5. Endpoints (undocumented override for staging/QA)
+        const endpoints = options._endpoints || {};
+        this.widgetOrigin = endpoints.widgetOrigin || 'https://connect.geophrase.com';
+        this.apiBase = endpoints.apiBase || 'https://api.geophrase.com';
 
         this._boundHandleMessage = this._handleMessage.bind(this);
+        this._prevBodyOverflow = null;
 
-        // 4. Pre-compute the secure URL (API Key is purposefully excluded)
+        // 6. Pre-compute the secure widget URL (API key purposefully excluded)
         const url = new URL(this.widgetOrigin);
         if (this.orderId) url.searchParams.append('order-id', this.orderId);
         if (this.phone) url.searchParams.append('phone', this.phone);
         if (this.theme) url.searchParams.append('theme', this.theme);
-
         this.widgetUrl = url.toString();
+    }
+
+    _getIframeBgCSS() {
+        const light = '#ffffff';
+        const dark = '#121212';
+
+        if (this.theme === 'light') {
+            return `#${this.iframeId} { background-color: ${light}; }`;
+        }
+        if (this.theme === 'dark') {
+            return `#${this.iframeId} { background-color: ${dark}; }`;
+        }
+        // 'system' or unspecified → follow OS preference, matching the widget
+        return `
+            #${this.iframeId} { background-color: ${light}; }
+            @media (prefers-color-scheme: dark) {
+                #${this.iframeId} { background-color: ${dark}; }
+            }
+        `;
+    }
+
+    _safeCall(fn, payload) {
+        if (typeof fn !== 'function') return;
+        try {
+            fn(payload);
+        } catch (err) {
+            console.error('Geophrase: merchant callback threw an error', err);
+        }
     }
 
     _injectDOM() {
         if (document.getElementById(this.overlayId)) return;
-
-        // Replace these hex codes with the exact background colors of your Next.js app
-        const iframeBgColor = this.theme === 'dark' ? '#121212' : '#ffffff';
 
         if (!document.getElementById(this.styleId)) {
             const style = document.createElement('style');
@@ -68,10 +101,10 @@ class Geophrase {
                     opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
                 }
                 #${this.overlayId}.geophrase-active { opacity: 1; visibility: visible; }
-                
-                /* 2. Apply the pre-calculated solid background color */
-                #${this.iframeId} { width: 100%; height: 100%; border: none; background-color: ${iframeBgColor}; }
-                
+
+                #${this.iframeId} { width: 100%; height: 100%; border: none; }
+                ${this._getIframeBgCSS()}
+
                 @media (min-width: 768px) {
                     #${this.iframeId} {
                         width: 375px; height: 812px; max-height: 85vh;
@@ -87,7 +120,7 @@ class Geophrase {
 
         const iframe = document.createElement('iframe');
         iframe.id = this.iframeId;
-        iframe.allow = "geolocation";
+        iframe.allow = 'geolocation';
 
         overlay.appendChild(iframe);
         document.body.appendChild(overlay);
@@ -97,18 +130,30 @@ class Geophrase {
     }
 
     open() {
+        if (this._isSSR) return;
+
         this._injectDOM();
+
         const iframe = document.getElementById(this.iframeId);
         if (iframe && !iframe.hasAttribute('src')) {
             iframe.src = this.widgetUrl;
         }
 
+        // Preserve merchant's existing overflow; idempotent under repeated open()
+        if (this._prevBodyOverflow === null) {
+            this._prevBodyOverflow = document.body.style.overflow;
+        }
         document.body.style.overflow = 'hidden';
+
         document.getElementById(this.overlayId)?.classList.add('geophrase-active');
     }
 
     close() {
-        document.body.style.overflow = '';
+        if (this._isSSR) return;
+
+        document.body.style.overflow = this._prevBodyOverflow ?? '';
+        this._prevBodyOverflow = null;
+
         document.getElementById(this.overlayId)?.classList.remove('geophrase-active');
 
         const iframe = document.getElementById(this.iframeId);
@@ -116,10 +161,14 @@ class Geophrase {
     }
 
     destroy() {
-        const overlay = document.getElementById(this.overlayId);
-        if (overlay) overlay.remove();
+        if (this._isSSR) return;
 
-        document.body.style.overflow = '';
+        document.getElementById(this.overlayId)?.remove();
+        document.getElementById(this.styleId)?.remove();
+
+        document.body.style.overflow = this._prevBodyOverflow ?? '';
+        this._prevBodyOverflow = null;
+
         window.removeEventListener('message', this._boundHandleMessage);
 
         this.onSuccess = null;
@@ -130,6 +179,10 @@ class Geophrase {
     async _handleMessage(event) {
         if (event.origin !== this.widgetOrigin) return;
 
+        // Defense in depth: only accept messages from our own iframe
+        const iframe = document.getElementById(this.iframeId);
+        if (!iframe || event.source !== iframe.contentWindow) return;
+
         let data = event.data;
         if (typeof data === 'string') {
             try { data = JSON.parse(data); } catch (e) { return; }
@@ -137,28 +190,29 @@ class Geophrase {
 
         if (data?.type === 'GEOPHRASE_CLOSE_WIDGET') {
             this.close();
-            if (this.onClose) this.onClose();
+            this._safeCall(this.onClose);
+            return;
         }
 
         if (data?.type === 'GEOPHRASE_RESOLUTION_TOKEN') {
             this.close();
 
-            // 5. Enterprise Flow: Return the raw token immediately
+            // Server mode: hand the raw token to the merchant for backend exchange
             if (this.mode === 'server') {
-                if (this.onSuccess) this.onSuccess({ token: data.token });
+                this._safeCall(this.onSuccess, { token: data.token });
                 return;
             }
 
-            // 6. Standard Flow: Perform client-side token resolution
+            // Client mode: resolve the token via the public API
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
 
             try {
                 const response = await fetch(`${this.apiBase}/business/resolve/`, {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "X-API-Key": this.apiKey,
-                        "Content-Type": "application/json"
+                        'X-API-Key': this.apiKey,
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ token: data.token }),
                     signal: controller.signal
@@ -166,27 +220,25 @@ class Geophrase {
 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
-                    if (this.onError) {
-                        this.onError({
-                            type: 'API_ERROR',
-                            status: response.status,
-                            message: errorData.message || 'Geophrase API resolution failed'
-                        });
-                    }
+                    this._safeCall(this.onError, {
+                        type: 'API_ERROR',
+                        status: response.status,
+                        message: errorData.message || 'Geophrase API resolution failed'
+                    });
                     return;
                 }
 
                 const responseData = await response.json();
-                if (this.onSuccess) this.onSuccess(responseData);
+                this._safeCall(this.onSuccess, responseData);
 
             } catch (error) {
-                console.error("Geophrase Resolution Error:", error);
-                if (this.onError) {
-                    this.onError({
-                        type: 'NETWORK_ERROR',
-                        message: error.name === 'AbortError' ? 'Geophrase API request timed out' : error.message
-                    });
-                }
+                console.error('Geophrase Resolution Error:', error);
+                this._safeCall(this.onError, {
+                    type: 'NETWORK_ERROR',
+                    message: error.name === 'AbortError'
+                        ? 'Geophrase API request timed out'
+                        : error.message
+                });
             } finally {
                 clearTimeout(timeoutId);
             }
