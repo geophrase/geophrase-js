@@ -28,7 +28,7 @@ export const useGeophrase = (options = {}) => {
                 mode: options.mode,
                 theme: options.theme,
                 key: options.key,
-                order_id: options.order_id,
+                orderId: options.orderId,
                 phone: options.phone,
                 onSuccess: (data) => {
                     if (savedCallbacks.current.onSuccess) savedCallbacks.current.onSuccess(data);
@@ -51,7 +51,7 @@ export const useGeophrase = (options = {}) => {
             }
         };
         // Include mode and theme in the dependency array so the instance rebuilds if they change state
-    }, [options.mode, options.theme, options.key, options.order_id, options.phone]);
+    }, [options.mode, options.theme, options.key, options.orderId, options.phone]);
 
     const open = useCallback(() => {
         if (geoInstance.current) {

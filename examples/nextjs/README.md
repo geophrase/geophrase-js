@@ -22,7 +22,7 @@ Before running this example, you need a Geophrase API key.
    ```tsx
    const { open } = useGeophrase({
        key: 'YOUR_API_KEY', // <--- Add your actual key here
-       order_id: 'ORD-98765',
+       orderId: 'ORD-98765',
        // ...
    });
    ```

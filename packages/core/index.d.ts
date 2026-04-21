@@ -17,7 +17,7 @@ export interface GeophraseOptions {
     mode?: 'client' | 'server';
     theme?: 'light' | 'dark' | 'system';
     key?: string;
-    order_id?: string;
+    orderId?: string;
     phone?: string;
     onSuccess: (result: GeophraseAddress | GeophraseToken) => void;
     onError?: (error: GeophraseError) => void;

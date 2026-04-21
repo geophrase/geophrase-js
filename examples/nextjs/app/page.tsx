@@ -1,17 +1,20 @@
 "use client";
 
-import {useGeophrase} from "@geophrase/react";
-import { GeophraseAddress } from '@geophrase/core';
-import {useState} from "react";
+import { useGeophrase } from "@geophrase/react";
+import { GeophraseAddress } from "@geophrase/core";
+import { useState } from "react";
 
 export default function Home() {
     const [result, setResult] = useState<GeophraseAddress | null>(null);
 
     const { open } = useGeophrase({
+        mode: 'client',
         key: 'YOUR_API_KEY',
-        order_id: 'ORD-98765', // Optional
-        phone: '9999999999',   // Optional - to prefill the account phone number
-        onSuccess: (address) => {
+        orderId: 'ORD-98765', // Optional
+        phone: '9999999999',   // Optional - pre-fill the account phone number
+        onSuccess: (data) => {
+            // In 'client' mode, data is the resolved GeophraseAddress
+            const address = data as GeophraseAddress;
             console.log("Address confirmed:", address.phrase);
             setResult(address);
         },
@@ -24,5 +27,5 @@ export default function Home() {
             <button onClick={open}>Select Exact Delivery Location</button>
             {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
         </div>
-    )
+    );
 }

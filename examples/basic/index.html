@@ -7,35 +7,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Geophrase Integration Example</title>
+    <script src="https://connect.geophrase.com/v1/geophrase.js"></script>
 </head>
 <body>
 
 <button id="geophrase-btn">Select Delivery Location</button>
 <pre id="result"></pre>
 
-<script src="https://connect.geophrase.com/v1/geophrase.js"></script>
 <script>
-    const geo = new Geophrase({
-        // 'client' (default): SDK resolves the token and returns the full address. Requires `key`.
-        // 'server': SDK returns a short-lived token. Forward it to your backend to resolve.
-        mode: 'server',
+    document.addEventListener('DOMContentLoaded', function () {
+        const geo = new Geophrase({
+            // 'server' (used here for a zero-config demo): SDK returns a short-lived token. Forward it to your backend to resolve.
+            // 'client': SDK resolves the token and returns the full address. Requires `key`.
+            mode: 'server',
 
-        // key: 'pk_live_xxx',   // required when mode is 'client'
+            // key: 'YOUR_API_KEY', // required when mode is 'client'
 
-        theme: 'system',        // 'light' | 'dark' | 'system'
-        orderId: 'ORD-8786',      // your internal reference order id
-        phone: '9999999999',    // prefill phone number
+            theme: 'system',        // 'light' | 'dark' | 'system'
+            orderId: 'ORD-8786',    // your internal reference order id
+            phone: '9999999999',    // prefill phone number
 
-        onSuccess: (result) => {
-            // client mode → parsed address JSON
-            // server mode → { token: "..." }  — POST this to your backend
-            document.getElementById('result').textContent = JSON.stringify(result, null, 2);
-        },
-        onError: (error) => console.error('Geophrase error:', error),
-        onClose: () => console.log('Widget dismissed.')
+            onSuccess: (result) => {
+                // client mode → parsed address JSON
+                // server mode → { token: "..." }  — POST this to your backend
+                document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+            },
+            onError: (error) => console.error('Geophrase error:', error),
+            onClose: () => console.log('Widget dismissed.')
+        });
+
+        document.getElementById('geophrase-btn').onclick = () => geo.open();
     });
-
-    document.getElementById('geophrase-btn').onclick = () => geo.open();
 </script>
 
 </body>

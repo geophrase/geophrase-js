@@ -6,7 +6,7 @@ function App() {
 
   const { open } = useGeophrase({
     key: 'YOUR_API_KEY',
-    order_id: 'ORD-98765', // Optional
+    orderId: 'ORD-98765', // Optional
     phone: '9999999999',   // Optional - to prefill the account phone number
     onSuccess: (address) => {
       console.log("Address confirmed:", address.phrase);

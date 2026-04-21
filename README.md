@@ -13,10 +13,10 @@ Explore fully working demos for Vanilla JS, React, and Next.js in the `/examples
 The fastest way to integrate Geophrase into custom web applications, headless architectures, or legacy web portals.
 
 ### 1. Include the Script
-Add the Geophrase Connect script to your `<head>`. Using the `defer` attribute is highly recommended to prevent render-blocking.
+Add the Geophrase Connect script to your `<head>`.
 
 ```html
-<script src="https://connect.geophrase.com/v1/geophrase.js" defer></script>
+<script src="https://connect.geophrase.com/v1/geophrase.js"></script>
 ```
 
 ### 2. Initialize and Open
@@ -40,7 +40,7 @@ Create an instance of `Geophrase`. Bind the `.open()` method to your checkout bu
             
             // --- OPTIONAL SETTINGS ---
             theme: 'system',        // 'light', 'dark', or 'system'
-            order_id: 'ORD-98765',  // Your internal reference ID
+            orderId: 'ORD-98765',  // Your internal reference ID
             phone: '9999999999',    // Prefill the account phone number
 
             // --- CALLBACKS ---
@@ -94,7 +94,7 @@ export default function Checkout() {
         mode: 'client',
         theme: 'system',
         key: 'YOUR_API_KEY',
-        order_id: 'ORD-98765', 
+        orderId: 'ORD-98765', 
         phone: '9999999999',   
         onSuccess: (data) => {
             console.log("Success:", data);
@@ -147,7 +147,7 @@ export default function Checkout() {
 | `mode` | `string` | Optional | `'client'` (default) or `'server'`. Determines the architectural flow of the SDK. |
 | `key` | `string` | **Conditional** | Your Geophrase API key. **Required if `mode` is `'client'`.** Omit if using server mode. |
 | `theme` | `string` | Optional | `'light'`, `'dark'`, or `'system'`. Defaults to `'system'`. |
-| `order_id` | `string` | Optional | Your internal reference ID for this checkout session. |
+| `orderId` | `string` | Optional | Your internal reference ID for this checkout session. |
 | `phone` | `string` | Optional | The customer's 10-digit phone number (pre-fills the widget). |
 | `onSuccess` | `function` | **Yes** | Called upon completion. Returns an `Address` object (`mode: 'client'`) or a `Token` object (`mode: 'server'`). |
 | `onError` | `function` | Optional | Called if the API fails or a network error occurs. Returns an `Error` object. |
@@ -178,7 +178,7 @@ When `mode: 'client'`, the SDK automatically resolves the data and returns the f
   "latitude": 16.241303391104953,
   "longitude": 99.7836155238037,
   "digi_pin": "202-P85-M87C",
-  "qr_code": "[https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png](https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png)"
+  "qr_code": "https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png"
 }
 ```
 

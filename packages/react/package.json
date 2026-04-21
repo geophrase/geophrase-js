@@ -20,6 +20,7 @@
     "ecommerce",
     "checkout"
   ],
+  "type": "module",
   "main": "src/index.js",
   "types": "index.d.ts",
   "files": [
