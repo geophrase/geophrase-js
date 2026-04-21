@@ -10,7 +10,7 @@ function App() {
     mode: 'server',
 
     // key: 'YOUR_API_KEY', // required when mode is 'client'
-    theme: 'system',        // 'light' | 'dark' | 'system'
+    theme: 'system',        // Optional. 'light' | 'dark' | 'system' (default)
 
     orderId: 'ORD-98765', // Optional
     phone: '9999999999',  // Optional. Prefill the account phone number

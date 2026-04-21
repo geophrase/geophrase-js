@@ -8,7 +8,13 @@ export default function Home() {
     const [result, setResult] = useState<GeophraseToken | null>(null);
 
     const { open } = useGeophrase({
-        mode: 'server',       // widget returns a token your backend exchanges for the address
+        // 'server' (used here for a zero-config demo): SDK returns a short-lived token. Forward it to your backend to resolve.
+        // 'client': SDK resolves the token and returns the full address. Requires `key`.
+        mode: 'server',
+
+        // key: 'YOUR_API_KEY', // required when mode is 'client'
+        theme: 'system',        // Optional. 'light' | 'dark' | 'system' (default)
+
         orderId: 'ORD-98765', // Optional
         phone: '9999999999',  // Optional. Prefill the account phone number
         onSuccess: (data) => {
