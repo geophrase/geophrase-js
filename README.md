@@ -22,7 +22,7 @@ Add the Geophrase Connect script to your `<head>`.
 ### 2. Initialize and Open
 Create an instance of `Geophrase`. Bind the `.open()` method to your checkout button after the DOM has loaded.
 
-*The snippet below uses `mode: 'server'` so you can paste it into an HTML file and see the widget end-to-end **without creating an API key first**. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. See **Data Structures** and **Security Note** below for the full trade-off.*
+*The snippet below uses `mode: 'server'` so you can paste it into an HTML file and see the widget **without creating an API key first**. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. See **Data Structures** and **Security Note** below for the full trade-off.*
 
 ```html
 <button id="geophrase-btn">Select Delivery Address</button>
@@ -79,7 +79,7 @@ Import the `useGeophrase` hook and attach it to your checkout button.
 
 *(Note: If you are using the Next.js App Router, ensure the component utilizing this hook is marked with `"use client";` at the top of the file).*
 
-The snippet below uses `mode: 'server'` so you can drop it into any React app and see the widget end-to-end **without creating an API key first**. The SDK also supports `mode: 'client'`. See **Data Structures** and **Security Note** below for the full trade-off.
+The snippet below uses `mode: 'server'` so you can drop it into any React app and see the widget **without creating an API key first**. The SDK also supports `mode: 'client'`. See **Data Structures** and **Security Note** below for the full trade-off.
 
 ```javascript
 import { useState } from 'react';
@@ -183,7 +183,7 @@ When `mode: 'server'`, the SDK safely halts before exposing any data to the fron
 
 ```json
 {
-  "token": "gphr_tok_5f8a9b2c1d4e..."
+  "token": "d098dc34-8995-4c07-b10c-1abcade94651"
 }
 ```
 *You must then pass this token to your backend server, where you can securely exchange it for the full address object using your Geophrase API Key.*
