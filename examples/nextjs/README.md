@@ -1,49 +1,34 @@
 # Geophrase Next.js Example
 
-This directory contains a minimal [Next.js](https://nextjs.org/) application demonstrating how to integrate the `@geophrase/react` SDK using the modern App Router and TypeScript.
+A minimal [Next.js](https://nextjs.org/) application demonstrating how to integrate the `@geophrase/react` SDK using the App Router and TypeScript. It runs in **server mode**, so you can get the widget working end-to-end in under a minute. **No API key required.**
 
-## Prerequisites
-
-Before running this example, you need a Geophrase API key.
-1. Log in to your [Geophrase Business Dashboard](https://business.geophrase.com).
-2. Generate a new API Key.
-3. **Security Step:** Ensure you whitelist `http://localhost:3000` (the default Next.js local port) in the dashboard so the key is authorized for local testing.
-
-## Setup Instructions
+## Setup
 
 1. **Install dependencies**
-   Navigate to this directory in your terminal and install the required packages:
    ```bash
    npm install
    ```
 
-2. **Configure your API Key**
-   Open your main page file (typically `app/page.tsx` or `src/app/page.tsx`) and replace the placeholder API key with your actual key:
-   ```tsx
-   const { open } = useGeophrase({
-       key: 'YOUR_API_KEY', // <--- Add your actual key here
-       orderId: 'ORD-98765',
-       // ...
-   });
-   ```
-
-3. **Run the development server**
-   Start the local Next.js development server:
+2. **Run the development server**
    ```bash
    npm run dev
    ```
 
-4. **Test the integration**
-   Open your browser to [http://localhost:3000](http://localhost:3000). Click the **"Select Exact Delivery Location"** button to open the widget, complete the flow, and view the structured JSON payload returned to the application.
+3. **Try the widget**
+   Open [http://localhost:3000](http://localhost:3000) and click **"Select Exact Delivery Location"**. Complete the flow and you'll see the returned `{ token }` payload rendered on the page.
 
-## Key Next.js Implementation Details
+## Server vs Client Mode
 
-* **Client Components:** Because the `@geophrase/react` SDK relies on interactive browser APIs (like window events and DOM injection), the component calling `useGeophrase` must be a Client Component. Ensure you have the `"use client";` directive at the absolute top of the file.
-* **TypeScript Support:** This example utilizes the `@geophrase/core` package to import the `GeophraseAddress` interface, allowing you to strictly type the JSON payload returned by the `onSuccess` callback.
+This example uses `mode: 'server'`, where the widget returns `{ token }` and your backend exchanges it for the full address using your API key. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. That mode requires passing `key` in the options and whitelisting your origin in the [Geophrase Business Dashboard](https://business.geophrase.com). Pick whichever fits your architecture; see the [full docs](https://business.geophrase.com/docs) for details.
+
+## Next.js notes
+
+- **Client Components:** `useGeophrase` uses browser APIs, so the component that calls it must be a Client Component. Add `"use client";` at the top of the file.
+- **TypeScript:** The example imports `GeophraseToken` from `@geophrase/core` to type the `onSuccess` payload in server mode. Use `GeophraseAddress` instead when you switch to client mode.
 
 ## Available Scripts
 
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the application for production.
-- `npm run start`: Starts a Next.js production server locally.
-- `npm run lint`: Runs ESLint to catch potential errors.
+- `npm run dev`: starts the development server
+- `npm run build`: builds the application for production
+- `npm run start`: starts a Next.js production server locally
+- `npm run lint`: runs ESLint

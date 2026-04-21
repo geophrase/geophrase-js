@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Geophrase Connect — Vanilla JS Integration Example
+  Geophrase Connect: Vanilla JS Integration Example
   Docs: https://business.geophrase.com/docs
 -->
 <html lang="en">
@@ -29,7 +29,7 @@
 
             onSuccess: (result) => {
                 // client mode → parsed address JSON
-                // server mode → { token: "..." }  — POST this to your backend
+                // server mode → { token: "..." }. POST this to your backend
                 document.getElementById('result').textContent = JSON.stringify(result, null, 2);
             },
             onError: (error) => console.error('Geophrase error:', error),

@@ -1,22 +1,21 @@
 "use client";
 
 import { useGeophrase } from "@geophrase/react";
-import { GeophraseAddress } from "@geophrase/core";
+import { GeophraseToken } from "@geophrase/core";
 import { useState } from "react";
 
 export default function Home() {
-    const [result, setResult] = useState<GeophraseAddress | null>(null);
+    const [result, setResult] = useState<GeophraseToken | null>(null);
 
     const { open } = useGeophrase({
-        mode: 'client',
-        key: 'YOUR_API_KEY',
+        mode: 'server',       // widget returns a token your backend exchanges for the address
         orderId: 'ORD-98765', // Optional
-        phone: '9999999999',   // Optional - pre-fill the account phone number
+        phone: '9999999999',  // Optional. Prefill the account phone number
         onSuccess: (data) => {
-            // In 'client' mode, data is the resolved GeophraseAddress
-            const address = data as GeophraseAddress;
-            console.log("Address confirmed:", address.phrase);
-            setResult(address);
+            // In 'server' mode, data is a GeophraseToken. POST it to your backend to resolve
+            const payload = data as GeophraseToken;
+            console.log("Token received:", payload.token);
+            setResult(payload);
         },
         onError: (error) => console.error("Error: ", error.message),
         onClose: () => console.log("User closed the component.")

@@ -22,43 +22,39 @@ Add the Geophrase Connect script to your `<head>`.
 ### 2. Initialize and Open
 Create an instance of `Geophrase`. Bind the `.open()` method to your checkout button after the DOM has loaded.
 
-*Note: The example below uses the standard `client` mode, which requires your API key and returns the full address directly to the browser.*
+*The snippet below uses `mode: 'server'` so you can paste it into an HTML file and see the widget end-to-end **without creating an API key first**. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. See **Data Structures** and **Security Note** below for the full trade-off.*
 
 ```html
 <button id="geophrase-btn">Select Delivery Address</button>
 
 <script>
-    // Wait for the HTML to parse and the deferred SDK to execute
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const geo = new Geophrase({
             // --- ARCHITECTURE FLOW ---
-            // 'client' (default): SDK resolves and returns the full address. Requires 'key'.
             // 'server': SDK returns a secure token. Omit 'key'. Pass token to your backend to resolve.
-            mode: 'client', 
-            
-            key: 'YOUR_API_KEY',    // Required when mode is 'client'
-            
+            // 'client' (default): SDK resolves and returns the full address. Requires 'key'.
+            mode: 'server',
+
             // --- OPTIONAL SETTINGS ---
             theme: 'system',        // 'light', 'dark', or 'system'
-            orderId: 'ORD-98765',  // Your internal reference ID
+            orderId: 'ORD-98765',   // Your internal reference ID
             phone: '9999999999',    // Prefill the account phone number
 
             // --- CALLBACKS ---
-            onSuccess: function(result) {
+            onSuccess: function (result) {
+                // In 'server' mode, result is { token: "..." }. POST it to your backend
                 // In 'client' mode, result is the full Address object
-                // In 'server' mode, result is { token: "..." }
                 console.log("Success:", result);
             },
-            onError: function(error) {
+            onError: function (error) {
                 console.error("Geophrase encountered an error:", error.message);
             },
-            onClose: function() {
+            onClose: function () {
                 console.log("User closed the widget without selecting an address.");
             }
         });
 
-        // Open the component when the user clicks your action button
-        document.getElementById('geophrase-btn').onclick = function(e) {
+        document.getElementById('geophrase-btn').onclick = function (e) {
             e.preventDefault();
             geo.open();
         };
@@ -83,6 +79,8 @@ Import the `useGeophrase` hook and attach it to your checkout button.
 
 *(Note: If you are using the Next.js App Router, ensure the component utilizing this hook is marked with `"use client";` at the top of the file).*
 
+The snippet below uses `mode: 'server'` so you can drop it into any React app and see the widget end-to-end **without creating an API key first**. The SDK also supports `mode: 'client'`. See **Data Structures** and **Security Note** below for the full trade-off.
+
 ```javascript
 import { useState } from 'react';
 import { useGeophrase } from '@geophrase/react';
@@ -91,11 +89,10 @@ export default function Checkout() {
     const [result, setResult] = useState(null);
 
     const { open } = useGeophrase({
-        mode: 'client',
+        mode: 'server',
         theme: 'system',
-        key: 'YOUR_API_KEY',
-        orderId: 'ORD-98765', 
-        phone: '9999999999',   
+        orderId: 'ORD-98765',
+        phone: '9999999999',
         onSuccess: (data) => {
             console.log("Success:", data);
             setResult(data);
@@ -129,8 +126,7 @@ export default function Checkout() {
     const [result, setResult] = useState<GeophraseAddress | GeophraseToken | null>(null);
 
     const { open } = useGeophrase({
-        mode: 'client',
-        key: 'YOUR_API_KEY',
+        mode: 'server', // switch to 'client' + key for in-browser resolution
         onSuccess: (data) => setResult(data)
     });
 
@@ -200,4 +196,4 @@ When `mode: 'server'`, the SDK safely halts before exposing any data to the fron
 The `key` used in the frontend configuration is your Geophrase API Key. Because this key is exposed in your client-side HTML or JavaScript, you **must** actively protect it from unauthorized use by configuring domain restrictions (e.g., whitelisting `https://checkout.yourdomain.com`) in your Geophrase Business Dashboard. You can generate multiple API keys in your dashboard; it is highly recommended to create a dedicated, uniquely restricted key for each frontend platform or application.
 
 **The Server-Side Flow (`mode: 'server'`):**
-While we use strict domain whitelisting to protect your API keys in client mode, the absolute best practice—if your application has a backend—is to keep your API keys entirely off the frontend. By using Server Mode, you omit the `key` parameter from the SDK completely. The widget will return a secure token to your frontend, which you then safely resolve from your own server using your API key.
+While we use strict domain whitelisting to protect your API keys in client mode, the absolute best practice, if your application has a backend, is to keep your API keys entirely off the frontend. By using Server Mode, you omit the `key` parameter from the SDK completely. The widget will return a secure token to your frontend, which you then safely resolve from your own server using your API key.
