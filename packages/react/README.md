@@ -1,6 +1,6 @@
 # @geophrase/react
 
-The official React and Next.js hook for Geophrase Connect. Drop the Geophrase address selector into any React checkout in minutes and capture perfectly structured Indian addresses and coordinates to eliminate Return to Origin (RTO) costs.
+The official React and Next.js hook for Geophrase Connect. Drop the Geophrase address selector into any React checkout in minutes and capture perfectly structured Indian addresses and coordinates to reduce Return to Origin (RTO) costs.
 
 👉 **[Full documentation and integration guide](https://business.geophrase.com/docs)**
 

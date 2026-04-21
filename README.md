@@ -1,6 +1,6 @@
 # Geophrase Connect JS SDK
 
-The official JavaScript library for Geophrase Connect. This repository contains the SDKs and UI components needed to drop the Geophrase address selector into your existing custom apps or checkout flows in minutes, capturing perfectly structured Indian addresses and coordinates to eliminate Return to Origin (RTO) costs.
+The official JavaScript library for Geophrase Connect. This repository contains the SDKs and UI components needed to drop the Geophrase address selector into your existing custom apps or checkout flows in minutes, capturing perfectly structured Indian addresses and coordinates to reduce Return to Origin (RTO) costs.
 
 📖 **[Read the full documentation and integration guide at business.geophrase.com/docs](https://business.geophrase.com/docs)**
 
