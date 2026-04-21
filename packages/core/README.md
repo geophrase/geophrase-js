@@ -92,7 +92,8 @@ const geo = new Geophrase({
 | `new Geophrase(options)` | Create an instance. Pre-computes the widget URL; safe to construct at module scope. |
 | `.open()`                | Open the modal. Idempotent.                                  |
 | `.close()`               | Close the modal without firing `onSuccess`.                  |
-| `.destroy()`             | Remove all DOM, listeners, and callbacks.                    |
+
+The underlying `Geophrase` instance is created on mount and destroyed on unmount automatically, so you do not need to call `destroy()` manually.
 
 TypeScript definitions (`GeophraseOptions`, `GeophraseAddress`, `GeophraseToken`, `GeophraseError`) ship with the package.
 

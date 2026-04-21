@@ -16,7 +16,7 @@ npm install @geophrase/react
 
 ## Quick Start
 
-The snippet below uses `mode: 'server'` so you can drop it into any React app and see the widget end-to-end **without creating an API key first**.
+The snippet below uses `mode: 'server'` so you can drop it into any React app and see the widget without creating an API key first.
 
 ```jsx
 import { useState } from 'react';
@@ -52,12 +52,12 @@ The SDK supports two modes. Pick whichever fits your architecture:
 - **`server`**: the widget returns `{ token }`. Your backend exchanges it for the full address using your API key, which never touches the frontend.
 - **`client`**: the widget resolves the address in the browser and passes it straight to `onSuccess`. Requires `key` in the SDK options.
 
-Both modes require a Geophrase API key. See [creating and securing an API key](https://business.geophrase.com/docs/api-keys).
-
-If your app has a backend, `server` mode keeps your API key entirely off the frontend, which is the most secure option. If you don't have a backend (or want the fastest possible integration), `client` mode with a domain-restricted key is fine.
+> Both modes require a Geophrase API key. See [creating and securing an API key](https://business.geophrase.com/docs/api-keys).
+>
+> If your app has a backend, `server` mode keeps your API key entirely off the frontend, which is the most secure option. If you don't have a backend (or want the fastest possible integration), `client` mode with a domain-restricted key is fine.
 
 ```jsx
-// client mode, no backend required
+// client mode, no backend integration required
 const { open } = useGeophrase({
     mode: 'client',
     key: 'YOUR_API_KEY',
