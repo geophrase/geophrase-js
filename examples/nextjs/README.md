@@ -19,7 +19,7 @@ A minimal [Next.js](https://nextjs.org/) application demonstrating how to integr
 
 ## Server vs Client Mode
 
-This example uses `mode: 'server'`, where the widget returns `{ token }` and your backend exchanges it for the full address using your API key. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. That mode requires passing `key` in the options and whitelisting your origin in the [Geophrase Business Dashboard](https://business.geophrase.com). Pick whichever fits your architecture; see the [full docs](https://business.geophrase.com/docs) for details.
+This example uses `mode: 'server'`, where the widget returns `{ token }` and your backend exchanges it for the full address using your API key. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. That mode requires passing `key` in the options; see [creating and securing an API key](https://business.geophrase.com/docs/api-keys). Pick whichever fits your architecture; see the [full docs](https://business.geophrase.com/docs) for details.
 
 ## Next.js notes
 

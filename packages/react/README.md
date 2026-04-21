@@ -50,7 +50,9 @@ export default function Checkout() {
 The SDK supports two modes. Pick whichever fits your architecture:
 
 - **`server`**: the widget returns `{ token }`. Your backend exchanges it for the full address using your API key, which never touches the frontend.
-- **`client`**: the widget resolves the address in the browser and passes it straight to `onSuccess`. Requires `key` in the options. You should restrict that key to your domain(s) in the [Geophrase Business Dashboard](https://business.geophrase.com).
+- **`client`**: the widget resolves the address in the browser and passes it straight to `onSuccess`. Requires `key` in the SDK options.
+
+Both modes require a Geophrase API key. See [creating and securing an API key](https://business.geophrase.com/docs/api-keys).
 
 If your app has a backend, `server` mode keeps your API key entirely off the frontend, which is the most secure option. If you don't have a backend (or want the fastest possible integration), `client` mode with a domain-restricted key is fine.
 
@@ -68,7 +70,7 @@ const { open } = useGeophrase({
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `mode` | `string` | Optional | `'client'` (default) or `'server'`. Determines the architectural flow of the SDK. |
-| `key` | `string` | **Conditional** | Your Geophrase API key. **Required if `mode` is `'client'`.** Omit if using server mode. |
+| `key` | `string` | **Conditional** | Your [Geophrase API key](https://business.geophrase.com/docs/api-keys). **Required if `mode` is `'client'`.** Omit if using server mode. |
 | `theme` | `string` | Optional | `'light'`, `'dark'`, or `'system'`. Defaults to `'system'`. |
 | `orderId` | `string` | Optional | Your internal reference ID for this checkout session. |
 | `phone` | `string` | Optional | The customer's 10-digit phone number (pre-fills the widget). |
