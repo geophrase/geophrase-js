@@ -2,7 +2,7 @@
 
 The official JavaScript library for Geophrase Connect. This repository contains the SDKs and UI components needed to drop the Geophrase address selector into your existing custom apps or checkout flows in minutes, capturing perfectly structured Indian addresses and coordinates to reduce Return to Origin (RTO) costs.
 
-📖 **[Read the full documentation and integration guide at business.geophrase.com/docs](https://business.geophrase.com/docs)**
+📖 **[Read the full documentation and integration guide at geophrase.com/docs](https://geophrase.com/docs)**
 
 Explore fully working demos for Vanilla JS, React, and Next.js in the `/examples` directory.
 
@@ -141,7 +141,7 @@ export default function Checkout() {
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `mode` | `string` | Optional | `'client'` (default) or `'server'`. Determines the architectural flow of the SDK. |
-| `key` | `string` | **Conditional** | Your [Geophrase API key](https://business.geophrase.com/docs/api-keys). **Required if `mode` is `'client'`.** Omit if using server mode. |
+| `key` | `string` | **Conditional** | Your [Geophrase API key](https://geophrase.com/docs/api-keys). **Required if `mode` is `'client'`.** Omit if using server mode. |
 | `theme` | `string` | Optional | `'light'`, `'dark'`, or `'system'`. Defaults to `'system'`. |
 | `orderId` | `string` | Optional | Your internal reference ID for this checkout session. |
 | `phone` | `string` | Optional | The customer's 10-digit phone number (pre-fills the widget). |
@@ -193,7 +193,7 @@ When `mode: 'server'`, the SDK safely halts before exposing any data to the fron
 ## 🔒 Security Note
 
 **The Client-Side Flow (`mode: 'client'`):**
-The `key` used in the frontend configuration is your [Geophrase API Key](https://geophrase.com/docs/api-keys). Because this key is exposed in your client-side HTML or JavaScript, you **must** actively protect it from unauthorized use by configuring domain restrictions (e.g., whitelisting `https://checkout.yourdomain.com`) in your Geophrase Business Dashboard. You can generate multiple API keys in your dashboard; it is highly recommended to create a dedicated, uniquely restricted key for each frontend platform or application.
+The `key` used in the frontend configuration is your [Geophrase API Key](https://geophrase.com/docs/api-keys). Because this key is exposed in your client-side HTML or JavaScript, you **must** actively protect it from unauthorized use by configuring domain restrictions (e.g., whitelisting `https://checkout.yourdomain.com`) in your Geophrase Dashboard. You can generate multiple API keys in your dashboard; it is highly recommended to create a dedicated, uniquely restricted key for each frontend platform or application.
 
 **The Server-Side Flow (`mode: 'server'`):**
 While we use strict domain whitelisting to protect your API keys in client mode, the absolute best practice, if your application has a backend, is to keep your API keys entirely off the frontend. By using Server Mode, you omit the `key` parameter from the SDK completely. The widget will return a secure token to your frontend, which you then safely resolve from your own server using your API key.
