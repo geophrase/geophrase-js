@@ -6,9 +6,7 @@ on:
       - main
     paths:
       - 'packages/core/src/index.js'
-
-permissions:
-  contents: read
+      - '.github/workflows/publish-vanilla-js.yml'
 
 jobs:
   build-and-deploy:
@@ -22,12 +20,19 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Replace export with Window/CommonJS bindings
+      - name: Verify Export Pattern
         run: |
+          if ! grep -q "export default Geophrase;" packages/core/src/index.js; then
+            echo "::error::Expected export pattern not found in source. The build script needs updating."
+            exit 1
+          fi
+
+      - name: Build CDN bundle
+        run: |
+          mkdir -p dist
           node -e "
           const fs = require('fs');
-          const filePath = 'packages/core/src/index.js';
-          let code = fs.readFileSync(filePath, 'utf8');
+          let code = fs.readFileSync('packages/core/src/index.js', 'utf8');
           
           const replacement = \`if (typeof window !== 'undefined') {
               window.Geophrase = Geophrase;
@@ -38,20 +43,43 @@ jobs:
               module.exports.default = Geophrase;
           }\`;
           
-          // Replace the specific export line
           code = code.replace('export default Geophrase;', replacement);
-          fs.writeFileSync(filePath, code);
+          fs.writeFileSync('dist/geophrase.js', code);
           "
 
       - name: Minify with Terser
         run: |
-          npx --yes terser packages/core/src/index.js --compress --mangle --output geophrase.js
+          npx --yes terser dist/geophrase.js \
+            --compress --mangle \
+            --source-map "url='geophrase.js.map'" \
+            --output dist/geophrase.js
 
-      - name: Copy minified SDK to GCP Server
+      - name: Prepare Server Staging Directory
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            mkdir -p /home/iqbal/js-sdk/v1/.staging
+
+      - name: Copy files to Server Staging
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "geophrase.js"
-          target: "/home/iqbal/js-sdk/v1"
+          source: "dist/geophrase.js,dist/geophrase.js.map"
+          target: "/home/iqbal/js-sdk/v1/.staging"
+          strip_components: 1
+
+      - name: Atomically swap in the new files
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            mv /home/iqbal/js-sdk/v1/.staging/geophrase.js /home/iqbal/js-sdk/v1/geophrase.js
+            mv /home/iqbal/js-sdk/v1/.staging/geophrase.js.map /home/iqbal/js-sdk/v1/geophrase.js.map
+            rm -rf /home/iqbal/js-sdk/v1/.staging
