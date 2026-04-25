@@ -51,7 +51,7 @@ class Geophrase {
         this._boundHandleMessage = this._handleMessage.bind(this);
         this._prevBodyOverflow = null;
 
-        // 6. Pre-compute the secure widget URL (API key purposefully excluded)
+        // 6. Pre-compute the secure widget URL
         const url = new URL(this.widgetOrigin);
         if (this.orderId) url.searchParams.append('order-id', this.orderId);
         if (this.phone) url.searchParams.append('phone', this.phone);
