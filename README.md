@@ -193,7 +193,7 @@ When `mode: 'server'`, the SDK safely halts before exposing any data to the fron
 ## 🔒 Security Note
 
 **The Client-Side Flow (`mode: 'client'`):**
-The `key` used in the frontend configuration is your [Geophrase API Key](https://business.geophrase.com/docs/api-keys). Because this key is exposed in your client-side HTML or JavaScript, you **must** actively protect it from unauthorized use by configuring domain restrictions (e.g., whitelisting `https://checkout.yourdomain.com`) in your Geophrase Business Dashboard. You can generate multiple API keys in your dashboard; it is highly recommended to create a dedicated, uniquely restricted key for each frontend platform or application.
+The `key` used in the frontend configuration is your [Geophrase API Key](https://geophrase.com/docs/api-keys). Because this key is exposed in your client-side HTML or JavaScript, you **must** actively protect it from unauthorized use by configuring domain restrictions (e.g., whitelisting `https://checkout.yourdomain.com`) in your Geophrase Business Dashboard. You can generate multiple API keys in your dashboard; it is highly recommended to create a dedicated, uniquely restricted key for each frontend platform or application.
 
 **The Server-Side Flow (`mode: 'server'`):**
 While we use strict domain whitelisting to protect your API keys in client mode, the absolute best practice, if your application has a backend, is to keep your API keys entirely off the frontend. By using Server Mode, you omit the `key` parameter from the SDK completely. The widget will return a secure token to your frontend, which you then safely resolve from your own server using your API key.
