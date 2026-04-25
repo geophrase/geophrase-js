@@ -1,13 +1,13 @@
 {
   "name": "@geophrase/core",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Drop-in address picker widget for Indian e-commerce checkouts. Captures structured addresses with coordinates to reduce RTO.",
   "license": "MIT",
   "author": "Geophrase",
   "homepage": "https://business.geophrase.com/docs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/geophrase/geophrase-js.git"
+    "url": "git+https://github.com/geophrase/geophrase-js.git"
   },
   "bugs": {
     "url": "https://github.com/geophrase/geophrase-js/issues"
