@@ -44,14 +44,6 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create and Push Git Tag
-        if: steps.check_tag.outputs.exists == 'false'
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ steps.get_version.outputs.version }}
-          git push origin ${{ steps.get_version.outputs.version }}
-
       - name: Publish Workspaces to NPM
         if: steps.check_tag.outputs.exists == 'false'
         run: |
@@ -59,3 +51,11 @@ jobs:
           npm publish --workspace=packages/react --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create and Push Git Tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.get_version.outputs.version }}
+          git push origin ${{ steps.get_version.outputs.version }}
