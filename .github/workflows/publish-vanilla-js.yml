@@ -45,9 +45,7 @@ jobs:
 
       - name: Minify with Terser
         run: |
-          # Use npx to download and run terser on the fly
-          # Outputting to 'geophrase.js' in the root runner directory
-          npx terser packages/core/src/index.js --compress --mangle --output geophrase.js
+          npx --yes terser packages/core/src/index.js --compress --mangle --output geophrase.js
 
       - name: Copy minified SDK to GCP Server
         uses: appleboy/scp-action@v0.1.7

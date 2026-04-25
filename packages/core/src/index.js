@@ -43,7 +43,7 @@ class Geophrase {
         this.overlayId = `geophrase-overlay-${instanceId}`;
         this.styleId = `geophrase-styles-${instanceId}`;
 
-        // 5. Endpoints (undocumented override for staging/QA)
+        // 5. Endpoints (undocumented override for staging)
         const endpoints = options._endpoints || {};
         this.widgetOrigin = endpoints.widgetOrigin || 'https://connect.geophrase.com';
         this.apiBase = endpoints.apiBase || 'https://api.geophrase.com';
