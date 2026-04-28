@@ -78,6 +78,37 @@ class Geophrase {
         `;
     }
 
+    _applyHostThemeColor() {
+        const light = '#ffffff';
+        const dark = '#121212';
+
+        const ensure = (id, media, color) => {
+            let el = document.getElementById(id);
+            if (!el) {
+                el = document.createElement('meta');
+                el.id = id;
+                el.name = 'theme-color';
+                if (media) el.media = media;
+                document.head.appendChild(el);
+            }
+            el.content = color;
+        };
+
+        if (this.theme === 'light') {
+            ensure(`${this.styleId}-tc`, '', light);
+        } else if (this.theme === 'dark') {
+            ensure(`${this.styleId}-tc`, '', dark);
+        } else {
+            ensure(`${this.styleId}-tc-light`, '(prefers-color-scheme: light)', light);
+            ensure(`${this.styleId}-tc-dark`, '(prefers-color-scheme: dark)', dark);
+        }
+    }
+
+    _removeHostThemeColor() {
+        [`${this.styleId}-tc`, `${this.styleId}-tc-light`, `${this.styleId}-tc-dark`]
+            .forEach(id => document.getElementById(id)?.remove());
+    }
+
     _safeCall(fn, payload) {
         if (typeof fn !== 'function') return;
         try {
@@ -145,6 +176,8 @@ class Geophrase {
         }
         document.body.style.overflow = 'hidden';
 
+        this._applyHostThemeColor();
+
         document.getElementById(this.overlayId)?.classList.add('geophrase-active');
     }
 
@@ -153,6 +186,8 @@ class Geophrase {
 
         document.body.style.overflow = this._prevBodyOverflow ?? '';
         this._prevBodyOverflow = null;
+
+        this._removeHostThemeColor();
 
         document.getElementById(this.overlayId)?.classList.remove('geophrase-active');
 
@@ -165,6 +200,7 @@ class Geophrase {
 
         document.getElementById(this.overlayId)?.remove();
         document.getElementById(this.styleId)?.remove();
+        this._removeHostThemeColor();
 
         document.body.style.overflow = this._prevBodyOverflow ?? '';
         this._prevBodyOverflow = null;
