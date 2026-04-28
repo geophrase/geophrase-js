@@ -95,7 +95,7 @@ class Geophrase {
             style.id = this.styleId;
             style.innerHTML = `
                 #${this.overlayId} {
-                    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                    position: fixed; inset: 0; width: 100dvw; height: 100dvh;
                     background-color: rgba(0, 0, 0, 0.6); z-index: 999999;
                     display: flex; justify-content: center; align-items: center;
                     opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
