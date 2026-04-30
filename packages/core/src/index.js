@@ -1,6 +1,10 @@
 class Geophrase {
     static _instanceCounter = 0;
 
+    // Widget background colors, kept in sync with the connect app's theme.
+    static _BG_LIGHT = '#ffffff';
+    static _BG_DARK = '#121212';
+
     constructor(options = {}) {
         if (typeof document === 'undefined') {
             this._isSSR = true;
@@ -49,10 +53,9 @@ class Geophrase {
         this.apiBase = endpoints.apiBase || 'https://api.geophrase.com';
 
         this._boundHandleMessage = this._handleMessage.bind(this);
-        this._prevBodyOverflow = null;
-        this._prevHtmlBg = null;
-        this._prevBodyBg = null;
-        this._hostBgApplied = false;
+        // Snapshot of host state we mutate on open(), restored on close()/destroy().
+        // null when not applied; an object of saved values otherwise.
+        this._savedHostState = null;
 
         // 6. Pre-compute the secure widget URL
         const url = new URL(this.widgetOrigin);
@@ -63,8 +66,8 @@ class Geophrase {
     }
 
     _getIframeBgCSS() {
-        const light = '#ffffff';
-        const dark = '#121212';
+        const light = Geophrase._BG_LIGHT;
+        const dark = Geophrase._BG_DARK;
 
         if (this.theme === 'light') {
             return `#${this.iframeId} { background-color: ${light}; }`;
@@ -82,51 +85,83 @@ class Geophrase {
     }
 
     _getWidgetBg() {
-        const light = '#ffffff';
-        const dark = '#121212';
-        if (this.theme === 'light') return light;
-        if (this.theme === 'dark') return dark;
+        if (this.theme === 'light') return Geophrase._BG_LIGHT;
+        if (this.theme === 'dark') return Geophrase._BG_DARK;
         // 'system' or unspecified → resolve at open time
-        return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? dark : light;
+        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+        return prefersDark ? Geophrase._BG_DARK : Geophrase._BG_LIGHT;
     }
 
-    _applyHostBg() {
-        if (this._hostBgApplied) return;
+    /**
+     * Mutates host-document state needed while the modal is open:
+     *   - body overflow: prevent background scroll
+     *   - html/body background: paint iOS safe-area zones to match the widget
+     *   - html color-scheme: tell the browser the page is currently light/dark
+     *   - theme-color meta: explicit hint for iOS Safari chrome
+     * All previous values are snapshotted and restored by _restoreHostOverrides().
+     */
+    _applyHostOverrides() {
+        if (this._savedHostState) return;
+
         const html = document.documentElement;
-        this._prevHtmlBg = html.style.backgroundColor;
-        this._prevBodyBg = document.body.style.backgroundColor;
-        this._prevHtmlColorScheme = html.style.colorScheme;
+        const body = document.body;
         const bg = this._getWidgetBg();
-        const scheme = bg === '#121212' ? 'dark' : 'light';
+        const scheme = bg === Geophrase._BG_DARK ? 'dark' : 'light';
+
+        this._savedHostState = {
+            bodyOverflow: body.style.overflow,
+            htmlBg: html.style.backgroundColor,
+            bodyBg: body.style.backgroundColor,
+            htmlColorScheme: html.style.colorScheme,
+        };
+
+        body.style.overflow = 'hidden';
         html.style.backgroundColor = bg;
-        document.body.style.backgroundColor = bg;
+        body.style.backgroundColor = bg;
         html.style.colorScheme = scheme;
 
-        // Add a theme-color meta as a final lever for iOS Safari chrome.
-        const tcId = `${this.styleId}-tc`;
-        let tc = document.getElementById(tcId);
+        let tc = document.getElementById(this._themeColorId());
         if (!tc) {
             tc = document.createElement('meta');
-            tc.id = tcId;
+            tc.id = this._themeColorId();
             tc.name = 'theme-color';
             document.head.appendChild(tc);
         }
         tc.content = bg;
-
-        this._hostBgApplied = true;
     }
 
-    _restoreHostBg() {
-        if (!this._hostBgApplied) return;
+    _restoreHostOverrides() {
+        if (!this._savedHostState) return;
+
         const html = document.documentElement;
-        html.style.backgroundColor = this._prevHtmlBg ?? '';
-        document.body.style.backgroundColor = this._prevBodyBg ?? '';
-        html.style.colorScheme = this._prevHtmlColorScheme ?? '';
-        document.getElementById(`${this.styleId}-tc`)?.remove();
-        this._prevHtmlBg = null;
-        this._prevBodyBg = null;
-        this._prevHtmlColorScheme = null;
-        this._hostBgApplied = false;
+        const body = document.body;
+        const saved = this._savedHostState;
+
+        body.style.overflow = saved.bodyOverflow;
+        html.style.backgroundColor = saved.htmlBg;
+        body.style.backgroundColor = saved.bodyBg;
+        html.style.colorScheme = saved.htmlColorScheme;
+
+        document.getElementById(this._themeColorId())?.remove();
+
+        this._savedHostState = null;
+    }
+
+    _themeColorId() {
+        return `${this.styleId}-tc`;
+    }
+
+    /**
+     * Hide the iframe until its document has actually painted. Browsers render
+     * an unloaded iframe as a white rectangle, which (a) flashes visibly and
+     * (b) on iOS Safari can lock the chrome appearance to light because Safari
+     * samples the page at the moment the modal appears.
+     */
+    _hideIframeUntilLoaded(iframe) {
+        iframe.style.opacity = '0';
+        iframe.addEventListener('load', () => {
+            iframe.style.opacity = '';
+        }, { once: true });
     }
 
     _safeCall(fn, payload) {
@@ -187,25 +222,11 @@ class Geophrase {
 
         const iframe = document.getElementById(this.iframeId);
         if (iframe && !iframe.hasAttribute('src')) {
-            // Hide the iframe until its document has actually painted.
-            // Browsers render an unloaded iframe as a white rectangle, which
-            // (a) causes a visible white flash and (b) on iOS Safari can lock
-            // the chrome appearance to light because Safari samples the page
-            // at the moment the modal appears.
-            iframe.style.opacity = '0';
-            iframe.addEventListener('load', () => {
-                iframe.style.opacity = '';
-            }, { once: true });
+            this._hideIframeUntilLoaded(iframe);
             iframe.src = this.widgetUrl;
         }
 
-        // Preserve merchant's existing overflow; idempotent under repeated open()
-        if (this._prevBodyOverflow === null) {
-            this._prevBodyOverflow = document.body.style.overflow;
-        }
-        document.body.style.overflow = 'hidden';
-
-        this._applyHostBg();
+        this._applyHostOverrides();
 
         document.getElementById(this.overlayId)?.classList.add('geophrase-active');
     }
@@ -213,10 +234,7 @@ class Geophrase {
     close() {
         if (this._isSSR) return;
 
-        document.body.style.overflow = this._prevBodyOverflow ?? '';
-        this._prevBodyOverflow = null;
-
-        this._restoreHostBg();
+        this._restoreHostOverrides();
 
         document.getElementById(this.overlayId)?.classList.remove('geophrase-active');
 
@@ -230,10 +248,7 @@ class Geophrase {
         document.getElementById(this.overlayId)?.remove();
         document.getElementById(this.styleId)?.remove();
 
-        document.body.style.overflow = this._prevBodyOverflow ?? '';
-        this._prevBodyOverflow = null;
-
-        this._restoreHostBg();
+        this._restoreHostOverrides();
 
         window.removeEventListener('message', this._boundHandleMessage);
 
