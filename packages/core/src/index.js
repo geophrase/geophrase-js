@@ -92,20 +92,40 @@ class Geophrase {
 
     _applyHostBg() {
         if (this._hostBgApplied) return;
-        this._prevHtmlBg = document.documentElement.style.backgroundColor;
+        const html = document.documentElement;
+        this._prevHtmlBg = html.style.backgroundColor;
         this._prevBodyBg = document.body.style.backgroundColor;
+        this._prevHtmlColorScheme = html.style.colorScheme;
         const bg = this._getWidgetBg();
-        document.documentElement.style.backgroundColor = bg;
+        const scheme = bg === '#121212' ? 'dark' : 'light';
+        html.style.backgroundColor = bg;
         document.body.style.backgroundColor = bg;
+        html.style.colorScheme = scheme;
+
+        // Add a theme-color meta as a final lever for iOS Safari chrome.
+        const tcId = `${this.styleId}-tc`;
+        let tc = document.getElementById(tcId);
+        if (!tc) {
+            tc = document.createElement('meta');
+            tc.id = tcId;
+            tc.name = 'theme-color';
+            document.head.appendChild(tc);
+        }
+        tc.content = bg;
+
         this._hostBgApplied = true;
     }
 
     _restoreHostBg() {
         if (!this._hostBgApplied) return;
-        document.documentElement.style.backgroundColor = this._prevHtmlBg ?? '';
+        const html = document.documentElement;
+        html.style.backgroundColor = this._prevHtmlBg ?? '';
         document.body.style.backgroundColor = this._prevBodyBg ?? '';
+        html.style.colorScheme = this._prevHtmlColorScheme ?? '';
+        document.getElementById(`${this.styleId}-tc`)?.remove();
         this._prevHtmlBg = null;
         this._prevBodyBg = null;
+        this._prevHtmlColorScheme = null;
         this._hostBgApplied = false;
     }
 
@@ -167,6 +187,15 @@ class Geophrase {
 
         const iframe = document.getElementById(this.iframeId);
         if (iframe && !iframe.hasAttribute('src')) {
+            // Hide the iframe until its document has actually painted.
+            // Browsers render an unloaded iframe as a white rectangle, which
+            // (a) causes a visible white flash and (b) on iOS Safari can lock
+            // the chrome appearance to light because Safari samples the page
+            // at the moment the modal appears.
+            iframe.style.opacity = '0';
+            iframe.addEventListener('load', () => {
+                iframe.style.opacity = '';
+            }, { once: true });
             iframe.src = this.widgetUrl;
         }
 
