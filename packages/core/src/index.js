@@ -50,6 +50,9 @@ class Geophrase {
 
         this._boundHandleMessage = this._handleMessage.bind(this);
         this._prevBodyOverflow = null;
+        this._prevHtmlBg = null;
+        this._prevBodyBg = null;
+        this._hostBgApplied = false;
 
         // 6. Pre-compute the secure widget URL
         const url = new URL(this.widgetOrigin);
@@ -76,6 +79,34 @@ class Geophrase {
                 #${this.iframeId} { background-color: ${dark}; }
             }
         `;
+    }
+
+    _getWidgetBg() {
+        const light = '#ffffff';
+        const dark = '#121212';
+        if (this.theme === 'light') return light;
+        if (this.theme === 'dark') return dark;
+        // 'system' or unspecified → resolve at open time
+        return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? dark : light;
+    }
+
+    _applyHostBg() {
+        if (this._hostBgApplied) return;
+        this._prevHtmlBg = document.documentElement.style.backgroundColor;
+        this._prevBodyBg = document.body.style.backgroundColor;
+        const bg = this._getWidgetBg();
+        document.documentElement.style.backgroundColor = bg;
+        document.body.style.backgroundColor = bg;
+        this._hostBgApplied = true;
+    }
+
+    _restoreHostBg() {
+        if (!this._hostBgApplied) return;
+        document.documentElement.style.backgroundColor = this._prevHtmlBg ?? '';
+        document.body.style.backgroundColor = this._prevBodyBg ?? '';
+        this._prevHtmlBg = null;
+        this._prevBodyBg = null;
+        this._hostBgApplied = false;
     }
 
     _safeCall(fn, payload) {
@@ -145,6 +176,8 @@ class Geophrase {
         }
         document.body.style.overflow = 'hidden';
 
+        this._applyHostBg();
+
         document.getElementById(this.overlayId)?.classList.add('geophrase-active');
     }
 
@@ -153,6 +186,8 @@ class Geophrase {
 
         document.body.style.overflow = this._prevBodyOverflow ?? '';
         this._prevBodyOverflow = null;
+
+        this._restoreHostBg();
 
         document.getElementById(this.overlayId)?.classList.remove('geophrase-active');
 
@@ -168,6 +203,8 @@ class Geophrase {
 
         document.body.style.overflow = this._prevBodyOverflow ?? '';
         this._prevBodyOverflow = null;
+
+        this._restoreHostBg();
 
         window.removeEventListener('message', this._boundHandleMessage);
 
