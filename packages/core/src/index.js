@@ -151,6 +151,14 @@ class Geophrase {
         return `${this.styleId}-tc`;
     }
 
+    _loaderId() {
+        return `${this.styleId}-loader`;
+    }
+
+    _spinKeyframesName() {
+        return `${this.styleId}-spin`;
+    }
+
     /**
      * Hide the iframe until its document has actually painted. Browsers render
      * an unloaded iframe as a white rectangle, which (a) flashes visibly and
@@ -188,7 +196,22 @@ class Geophrase {
                 }
                 #${this.overlayId}.geophrase-active { opacity: 1; visibility: visible; }
 
-                #${this.iframeId} { width: 100%; height: 100%; border: none; }
+                #${this._loaderId()} {
+                    position: absolute;
+                    top: 50%; left: 50%;
+                    width: 40px; height: 40px;
+                    margin: -20px 0 0 -20px;
+                    border: 3px solid rgba(255, 255, 255, 0.25);
+                    border-top-color: rgba(255, 255, 255, 0.9);
+                    border-radius: 50%;
+                    animation: ${this._spinKeyframesName()} 0.8s linear infinite;
+                }
+                @keyframes ${this._spinKeyframesName()} { to { transform: rotate(360deg); } }
+
+                #${this.iframeId} {
+                    width: 100%; height: 100%; border: none;
+                    position: relative; z-index: 1;
+                }
                 ${this._getIframeBgCSS()}
 
                 @media (min-width: 768px) {
@@ -204,11 +227,17 @@ class Geophrase {
         const overlay = document.createElement('div');
         overlay.id = this.overlayId;
 
+        // Spinner shown while the iframe is loading. The iframe stacks above
+        // it (z-index: 1) and covers it once paint completes — no state to toggle.
+        const loader = document.createElement('div');
+        loader.id = this._loaderId();
+        overlay.appendChild(loader);
+
         const iframe = document.createElement('iframe');
         iframe.id = this.iframeId;
         iframe.allow = 'geolocation';
-
         overlay.appendChild(iframe);
+
         document.body.appendChild(overlay);
 
         window.removeEventListener('message', this._boundHandleMessage);
@@ -276,17 +305,25 @@ class Geophrase {
         }
 
         if (data?.type === 'GEOPHRASE_RESOLUTION_TOKEN') {
-            this.close();
-
-            // Server mode: hand the raw token to the merchant for backend exchange
+            // Server mode: nothing to wait for — close immediately and hand
+            // the raw token to the merchant for backend exchange.
             if (this.mode === 'server') {
+                this.close();
                 this._safeCall(this.onSuccess, { token: data.token });
                 return;
             }
 
-            // Client mode: resolve the token via the public API
+            // Client mode: keep the overlay + spinner visible while we exchange
+            // the token for the resolved address. Closing now would leave the
+            // merchant's page blank for the duration of the API round-trip.
+            iframe.style.opacity = '0';
+
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+            // Build the callback to fire after we close the overlay, so the
+            // merchant sees the modal disappear before their handler runs.
+            let callback = null;
 
             try {
                 const response = await fetch(`${this.apiBase}/business/resolve/`, {
@@ -301,20 +338,18 @@ class Geophrase {
 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
-                    this._safeCall(this.onError, {
+                    callback = () => this._safeCall(this.onError, {
                         type: 'API_ERROR',
                         status: response.status,
                         message: errorData.message || 'Geophrase API resolution failed'
                     });
-                    return;
+                } else {
+                    const responseData = await response.json();
+                    callback = () => this._safeCall(this.onSuccess, responseData);
                 }
-
-                const responseData = await response.json();
-                this._safeCall(this.onSuccess, responseData);
-
             } catch (error) {
                 console.error('Geophrase Resolution Error:', error);
-                this._safeCall(this.onError, {
+                callback = () => this._safeCall(this.onError, {
                     type: 'NETWORK_ERROR',
                     message: error.name === 'AbortError'
                         ? 'Geophrase API request timed out'
@@ -322,6 +357,8 @@ class Geophrase {
                 });
             } finally {
                 clearTimeout(timeoutId);
+                this.close();
+                callback?.();
             }
         }
     }

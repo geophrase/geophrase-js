@@ -1,6 +1,6 @@
 {
   "name": "@geophrase/react",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "React & Next.js hook for the Geophrase address picker. Drop-in widget that captures structured Indian addresses with coordinates to reduce RTO.",
   "license": "MIT",
   "author": "Geophrase",
@@ -44,7 +44,7 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "@geophrase/core": "^1.4.0"
+    "@geophrase/core": "^1.4.1"
   },
   "publishConfig": {
     "access": "public"
