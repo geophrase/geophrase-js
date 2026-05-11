@@ -84,12 +84,12 @@ The component calling `useGeophrase` relies on browser APIs, so it must be a **C
 
 ### TypeScript
 
-The hook is fully typed. Import `GeophraseAddress` and `GeophraseToken` from `@geophrase/core` to type `onSuccess` results:
+The hook is fully typed. Import `GeophraseAddress` and `GeophraseRequestId` from `@geophrase/core` to type `onSuccess` results:
 
 ```tsx
-import { GeophraseAddress, GeophraseToken } from '@geophrase/core';
+import { GeophraseAddress, GeophraseRequestId } from '@geophrase/core';
 
-const [result, setResult] = useState<GeophraseAddress | GeophraseToken | null>(null);
+const [result, setResult] = useState<GeophraseAddress | GeophraseRequestId | null>(null);
 ```
 
 ## What the hook returns

@@ -22,7 +22,7 @@ export interface GeophraseAddress {
     address: GeophraseAddressDetails;
 }
 
-export interface GeophraseToken {
+export interface GeophraseRequestId {
     requestId: string;
 }
 
@@ -38,7 +38,7 @@ export interface GeophraseOptions {
     key?: string;
     orderId?: string;
     phone?: string;
-    onSuccess: (result: GeophraseAddress | GeophraseToken) => void;
+    onSuccess: (result: GeophraseAddress | GeophraseRequestId) => void;
     onError?: (error: GeophraseError) => void;
     onClose?: () => void;
 }

@@ -95,6 +95,6 @@ const geo = new Geophrase({
 
 The underlying `Geophrase` instance is created on mount and destroyed on unmount automatically, so you do not need to call `destroy()` manually.
 
-TypeScript definitions (`GeophraseOptions`, `GeophraseAddress`, `GeophraseToken`, `GeophraseError`) ship with the package.
+TypeScript definitions (`GeophraseOptions`, `GeophraseAddress`, `GeophraseRequestId`, `GeophraseError`) ship with the package.
 
 See the [full docs](https://geophrase.com/docs/vanilla-js) for the complete configuration reference, security guidance, and response schemas.

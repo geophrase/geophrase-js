@@ -23,16 +23,16 @@ A minimal Next.js application demonstrating how to integrate the `@geophrase/rea
    ```
 
 4. **Try the widget**
-   Open [http://localhost:3000](http://localhost:3000) and click **"Select Exact Delivery Location"**. Complete the flow and you'll see the returned `{ token }` payload rendered on the page.
+   Open [http://localhost:3000](http://localhost:3000) and click **"Select Exact Delivery Location"**. Complete the flow and you'll see the returned `{ requestId }` payload rendered on the page.
 
 ## Server vs Client Mode
 
-This example uses `mode: 'server'`, where the widget returns `{ token }` and your backend exchanges it for the full address using your API key. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. That mode requires passing `key` in the options; see [creating and securing an API key](https://geophrase.com/docs/api-keys). Pick whichever fits your architecture; see the [full docs](https://geophrase.com/docs/nextjs) for details.
+This example uses `mode: 'server'`, where the widget returns `{ requestId }` and your backend exchanges it for the full address using your API key. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. That mode requires passing `key` in the options; see [creating and securing an API key](https://geophrase.com/docs/api-keys). Pick whichever fits your architecture; see the [full docs](https://geophrase.com/docs/nextjs) for details.
 
 ## Next.js notes
 
 - **Client Components:** `useGeophrase` uses browser APIs, so the component that calls it must be a Client Component. Add `"use client";` at the top of the file.
-- **TypeScript:** The example imports `GeophraseToken` from `@geophrase/core` to type the `onSuccess` payload in server mode. Use `GeophraseAddress` instead when you switch to client mode.
+- **TypeScript:** The example imports `GeophraseRequestId` from `@geophrase/core` to type the `onSuccess` payload in server mode. Use `GeophraseAddress` instead when you switch to client mode.
 
 ## Available Scripts
 

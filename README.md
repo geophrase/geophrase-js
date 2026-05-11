@@ -119,11 +119,11 @@ When storing the resolved result in React state, you can type it against both th
 ```tsx
 import { useState } from 'react';
 import { useGeophrase } from '@geophrase/react';
-import { GeophraseAddress, GeophraseToken } from '@geophrase/core';
+import { GeophraseAddress, GeophraseRequestId } from '@geophrase/core';
 
 export default function Checkout() {
     // Explicitly type the state to accept either the Address or Token object
-    const [result, setResult] = useState<GeophraseAddress | GeophraseToken | null>(null);
+    const [result, setResult] = useState<GeophraseAddress | GeophraseRequestId | null>(null);
 
     const { open } = useGeophrase({
         mode: 'server', // switch to 'client' + key for in-browser resolution
