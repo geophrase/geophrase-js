@@ -20,7 +20,7 @@ export default function Home() {
         onSuccess: (data) => {
             // In 'server' mode, data is a GeophraseToken. POST it to your backend to resolve
             const payload = data as GeophraseToken;
-            console.log("Token received:", payload.token);
+            console.log("requestId received:", payload.requestId);
             setResult(payload);
         },
         onError: (error) => console.error("Error: ", error.message),
