@@ -324,6 +324,9 @@ class Geophrase {
             // merchant sees the modal disappear before their handler runs.
             let callback = null;
 
+            const payload = { request_id: data.requestId };
+            if (this.orderId) payload.order_id = this.orderId;
+
             try {
                 const response = await fetch(`${this.apiBase}/business/resolve/`, {
                     method: 'POST',
@@ -331,7 +334,7 @@ class Geophrase {
                         'X-API-Key': this.apiKey,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ request_id: data.requestId, order_id: this.orderId }),
+                    body: JSON.stringify(payload),
                     signal: controller.signal
                 });
 

@@ -1,10 +1,29 @@
+export interface GeophraseAddressDetails {
+    city: string;
+    state: string;
+    digi_pin: string;
+    landmark: string;
+    latitude: number;
+    longitude: number;
+    postal_code: number;
+    address_type: string;
+    address_line_one: string;
+    address_line_two: string;
+    contact_full_name: string;
+    verified_mobile_num: string;
+}
+
 export interface GeophraseAddress {
-    phrase: string;
-    [key: string]: any;
+    short_code: string;
+    short_link: string;
+    qr_code: string;
+    captured_at: number;
+    order_id: string;
+    address: GeophraseAddressDetails;
 }
 
 export interface GeophraseToken {
-    token: string;
+    requestId: string;
 }
 
 export interface GeophraseError {

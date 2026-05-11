@@ -42,8 +42,8 @@ Create an instance of `Geophrase`. Bind the `.open()` method to your checkout bu
 
             // --- CALLBACKS ---
             onSuccess: function (result) {
-                // In 'server' mode, result is { token: "..." }. POST it to your backend
-                // In 'client' mode, result is the full Address object
+                // In 'server' mode, result is { requestId: "..." }. POST it to your backend.
+                // In 'client' mode, result is the full Address object.
                 console.log("Success:", result);
             },
             onError: function (error) {
@@ -160,33 +160,39 @@ When `mode: 'client'`, the SDK automatically resolves the data and returns the f
 
 ```json
 {
-  "phrase": "eid-hiu-sac",
-  "verified_account_mobile_num": "9999999999",
-  "address_type": "OFFICE",
-  "contact_full_name": "Rohan",
-  "contact_mobile_num": "9999999999",
-  "address_line_one": "Floor 99",
-  "address_line_two": "GTB Building",
-  "landmark": "Map: gphr.in/eid-hiu-sac",
-  "city": "Delhi",
-  "state": "Delhi",
-  "postal_code": 110007,
-  "latitude": 16.241303391104953,
-  "longitude": 99.7836155238037,
-  "digi_pin": "202-P85-M87C",
-  "qr_code": "https://storage.googleapis.com/geophrase/qr-codes/eid-hiu-sac.png"
+  "short_code": "e6v9th",
+  "short_link": "https://gphr.in/e6v9th",
+  "qr_code": "https://storage.googleapis.com/geophrase/qr-codes/e6v9th.png",
+  "captured_at": 1778485231452,
+  "order_id": "ORD-8786",
+  "address": {
+    "city": "Dhubri",
+    "state": "Assam",
+    "digi_pin": "272-P83-4648",
+    "landmark": "Map: gphr.in/e6v9th",
+    "latitude": 26.2510677,
+    "longitude": 89.7746059,
+    "postal_code": 783335,
+    "address_type": "HOUSE",
+    "address_line_one": "sdcsdc",
+    "address_line_two": "sdcdfvcsdcsdc",
+    "contact_full_name": "sdcsdc",
+    "verified_mobile_num": "9999999999"
+  }
 }
 ```
 
+All fields are always present. `order_id` is an empty string when `orderId` was not supplied at init. `landmark` and `address_line_two` may be empty strings. No field is ever `null`.
+
 ### 2. Server Mode Payload (Token Exchange Flow)
-When `mode: 'server'`, the SDK safely halts before exposing any data to the frontend and returns a single-use token:
+When `mode: 'server'`, the SDK safely halts before exposing any data to the frontend and returns a single-use request ID:
 
 ```json
 {
-  "token": "d098dc34-8995-4c07-b10c-1abcade94651"
+  "requestId": "6cafc00f-30ff-48f8-97c2-61e3da8f0acf"
 }
 ```
-*You must then pass this token to your backend server, where you can securely exchange it for the full address object using your Geophrase API Key.*
+*Pass this `requestId` to your backend server, where you can securely exchange it for the full address object using your Geophrase API Key.*
 
 ---
 
