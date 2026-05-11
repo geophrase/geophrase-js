@@ -314,7 +314,7 @@ class Geophrase {
 
             // Client mode: keep the overlay + spinner visible while we exchange
             // the token for the resolved address. Closing now would leave the
-            // merchant's page blank for the duration of the API round-trip.
+            // merchant's page blank for the duration of the API round-trip
             iframe.style.opacity = '0';
 
             const controller = new AbortController();
