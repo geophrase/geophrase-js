@@ -31,7 +31,7 @@ Create an instance of `Geophrase`. Bind the `.open()` method to your checkout bu
     document.addEventListener('DOMContentLoaded', function () {
         const geo = new Geophrase({
             // --- ARCHITECTURE FLOW ---
-            // 'server': SDK returns a secure token. Omit 'key'. Pass token to your backend to resolve.
+            // 'server': SDK returns a secure requestId. Omit 'key'. Pass requestId to your backend to resolve.
             // 'client' (default): SDK resolves and returns the full address. Requires 'key'.
             mode: 'server',
 
@@ -160,23 +160,23 @@ When `mode: 'client'`, the SDK automatically resolves the data and returns the f
 
 ```json
 {
-  "short_code": "e6v9th",
-  "short_link": "https://gphr.in/e6v9th",
-  "qr_code": "https://storage.googleapis.com/geophrase/qr-codes/e6v9th.png",
+  "short_code": "e6w9th",
+  "short_link": "https://gphr.in/e6w9th",
+  "qr_code": "https://storage.googleapis.com/geophrase/qr-codes/e6w9th.png",
   "captured_at": 1778485231452,
   "order_id": "ORD-8786",
   "address": {
-    "city": "Dhubri",
-    "state": "Assam",
-    "digi_pin": "272-P83-4648",
-    "landmark": "Map: gphr.in/e6v9th",
-    "latitude": 26.2510677,
-    "longitude": 89.7746059,
-    "postal_code": 783335,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "digi_pin": "172-P83-4648",
+    "landmark": "Map: gphr.in/e6w9th",
+    "latitude": 23.2510677,
+    "longitude": 82.7746059,
+    "postal_code": 781012,
     "address_type": "HOUSE",
-    "address_line_one": "sdcsdc",
-    "address_line_two": "sdcdfvcsdcsdc",
-    "contact_full_name": "sdcsdc",
+    "address_line_one": "Flat B, 4th Floor",
+    "address_line_two": "ABC Square Tower",
+    "contact_full_name": "Ramesh",
     "verified_mobile_num": "9999999999"
   }
 }
@@ -189,7 +189,7 @@ When `mode: 'server'`, the SDK safely halts before exposing any data to the fron
 
 ```json
 {
-  "requestId": "6cafc00f-30ff-48f8-97c2-61e3da8f0acf"
+  "requestId": "6cafc00f-30ff-48f8-9732-61e3da8f0acf"
 }
 ```
 *Pass this `requestId` to your backend server, where you can securely exchange it for the full address object using your Geophrase API Key.*
