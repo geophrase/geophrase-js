@@ -59,7 +59,6 @@ class Geophrase {
 
         // 6. Pre-compute the secure widget URL
         const url = new URL(this.widgetOrigin);
-        if (this.orderId) url.searchParams.append('order-id', this.orderId);
         if (this.phone) url.searchParams.append('phone', this.phone);
         if (this.theme) url.searchParams.append('theme', this.theme);
         this.widgetUrl = url.toString();
@@ -309,7 +308,7 @@ class Geophrase {
             // the raw token to the merchant for backend exchange.
             if (this.mode === 'server') {
                 this.close();
-                this._safeCall(this.onSuccess, { token: data.token });
+                this._safeCall(this.onSuccess, { requestId: data.requestId });
                 return;
             }
 
@@ -332,7 +331,7 @@ class Geophrase {
                         'X-API-Key': this.apiKey,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ token: data.token }),
+                    body: JSON.stringify({ request_id: data.requestId, order_id: this.orderId }),
                     signal: controller.signal
                 });
 
