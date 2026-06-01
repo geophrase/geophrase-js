@@ -1,6 +1,6 @@
 # Geophrase Next.js Example
 
-A minimal Next.js application demonstrating how to integrate the `@geophrase/react` SDK using the App Router and TypeScript. It runs in **server mode**, so you can get the widget working in under a minute. No API key required.
+A minimal Next.js application demonstrating how to integrate the `@geophrase/react` SDK using the App Router and TypeScript. It runs in **server mode**, so you only need your **API key id** — no secret API key required. Swap the placeholder `keyId` in `app/page.tsx` for your own and the widget works in under a minute.
 
 ## Setup
 
@@ -27,7 +27,9 @@ A minimal Next.js application demonstrating how to integrate the `@geophrase/rea
 
 ## Server vs Client Mode
 
-This example uses `mode: 'server'`, where the widget returns `{ requestId }` and your backend exchanges it for the full address using your API key. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. That mode requires passing `key` in the options; see [creating and securing an API key](https://geophrase.com/docs/api-keys). Pick whichever fits your architecture; see the [full docs](https://geophrase.com/docs/nextjs) for details.
+A `keyId` (your 8-character API key id) is **always required**, in both modes — it identifies your account to the widget and is passed to the hosted page.
+
+This example uses `mode: 'server'`, where the widget returns `{ requestId }` and your backend exchanges it for the full address using your secret API key. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. That mode additionally requires passing `key` (your secret API key) in the options; see [creating and securing an API key](https://geophrase.com/docs/api-keys). Pick whichever fits your architecture; see the [full docs](https://geophrase.com/docs/nextjs) for details.
 
 ## Next.js notes
 

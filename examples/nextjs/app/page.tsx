@@ -8,6 +8,8 @@ export default function Home() {
     const [result, setResult] = useState<GeophraseRequestId | null>(null);
 
     const { open } = useGeophrase({
+        keyId: 'YOUR_API_KEY_ID',      // Required. Your 8-character API key id.
+
         // 'server' (used here for a zero-config demo): SDK returns a short-lived requestId. Forward it to your backend to resolve.
         // 'client': SDK resolves the requestId and returns the full address. Requires `key`.
         mode: 'server',
