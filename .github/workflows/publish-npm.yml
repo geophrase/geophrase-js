@@ -60,8 +60,6 @@ jobs:
         run: |
           npm publish --workspace=packages/core --access public --provenance
           npm publish --workspace=packages/react --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create and Push Git Tag
         if: steps.check_tag.outputs.exists == 'false'
