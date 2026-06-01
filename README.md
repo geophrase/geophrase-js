@@ -22,7 +22,7 @@ Add the Geophrase Connect script to your `<head>`.
 ### 2. Initialize and Open
 Create an instance of `Geophrase`. Bind the `.open()` method to your checkout button after the DOM has loaded.
 
-*The snippet below uses `mode: 'server'` so you can paste it into an HTML file and see the widget **without creating an API key first**. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. See **Data Structures** and **Security Note** below for the full trade-off.*
+*The snippet below uses `mode: 'server'`, so the only credential you need on the frontend is your **API key id** — no secret API key. Swap in your own `keyId` and paste it into an HTML file to see the widget. The SDK also supports `mode: 'client'`, which resolves the address directly in the browser. See **Data Structures** and **Security Note** below for the full trade-off.*
 
 ```html
 <button id="geophrase-btn">Select Delivery Address</button>
@@ -30,6 +30,8 @@ Create an instance of `Geophrase`. Bind the `.open()` method to your checkout bu
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const geo = new Geophrase({
+            keyId: 'YOUR_API_KEY_ID',   // Required. Your API key id (both modes).
+
             // --- ARCHITECTURE FLOW ---
             // 'server': SDK returns a secure requestId. Omit 'key'. Pass requestId to your backend to resolve.
             // 'client' (default): SDK resolves and returns the full address. Requires 'key'.
@@ -79,7 +81,7 @@ Import the `useGeophrase` hook and attach it to your checkout button.
 
 *(Note: If you are using the Next.js App Router, ensure the component utilizing this hook is marked with `"use client";` at the top of the file).*
 
-The snippet below uses `mode: 'server'` so you can drop it into any React app and see the widget **without creating an API key first**. The SDK also supports `mode: 'client'`. See **Data Structures** and **Security Note** below for the full trade-off.
+The snippet below uses `mode: 'server'`, so the only credential you need on the frontend is your **API key id** — no secret API key. Swap in your own `keyId` and drop it into any React app to see the widget. The SDK also supports `mode: 'client'`. See **Data Structures** and **Security Note** below for the full trade-off.
 
 ```javascript
 import { useState } from 'react';
@@ -89,6 +91,7 @@ export default function Checkout() {
     const [result, setResult] = useState(null);
 
     const { open } = useGeophrase({
+        keyId: 'YOUR_API_KEY_ID',
         mode: 'server',
         theme: 'system',
         orderId: 'ORD-98765',
@@ -126,6 +129,7 @@ export default function Checkout() {
     const [result, setResult] = useState<GeophraseAddress | GeophraseRequestId | null>(null);
 
     const { open } = useGeophrase({
+        keyId: 'YOUR_API_KEY_ID',
         mode: 'server', // switch to 'client' + key for in-browser resolution
         onSuccess: (data) => setResult(data)
     });
@@ -140,8 +144,9 @@ export default function Checkout() {
 
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
+| `keyId` | `string` | **Yes** | Your 8-character [Geophrase API key id](https://geophrase.com/docs/api-keys). Required in **both** modes; sent to the widget to identify your account. |
 | `mode` | `string` | Optional | `'client'` (default) or `'server'`. Determines the architectural flow of the SDK. |
-| `key` | `string` | **Conditional** | Your [Geophrase API key](https://geophrase.com/docs/api-keys). **Required if `mode` is `'client'`.** Omit if using server mode. |
+| `key` | `string` | **Conditional** | Your secret [Geophrase API key](https://geophrase.com/docs/api-keys). **Required if `mode` is `'client'`.** Omit if using server mode. |
 | `theme` | `string` | Optional | `'light'`, `'dark'`, or `'system'`. Defaults to `'system'`. |
 | `orderId` | `string` | Optional | Your internal reference ID for this checkout session. |
 | `phone` | `string` | Optional | The customer's 10-digit phone number (pre-fills the widget). |
@@ -197,6 +202,9 @@ When `mode: 'server'`, the SDK safely halts before exposing any data to the fron
 ---
 
 ## 🔒 Security Note
+
+**`keyId` vs `key`:**
+`keyId` is an identifier, not a secret. It is always required and is sent to the widget in the iframe URL to tell us which account the request belongs to — exposing it on the frontend is expected and safe. Your `key` (the secret API key) is what must be protected; the guidance below applies to it.
 
 **The Client-Side Flow (`mode: 'client'`):**
 The `key` used in the frontend configuration is your [Geophrase API Key](https://geophrase.com/docs/api-keys). Because this key is exposed in your client-side HTML or JavaScript, you **must** actively protect it from unauthorized use by configuring domain restrictions (e.g., whitelisting `https://checkout.yourdomain.com`) in your Geophrase Dashboard. You can generate multiple API keys in your dashboard; it is highly recommended to create a dedicated, uniquely restricted key for each frontend platform or application.

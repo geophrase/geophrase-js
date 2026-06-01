@@ -16,7 +16,7 @@ npm install @geophrase/react
 
 ## Quick Start
 
-The snippet below uses `mode: 'server'` so you can drop it into any React app and see the widget without creating an API key first.
+The snippet below uses `mode: 'server'`, which needs only your API key id — no secret API key. Drop it into any React app, swap in your own `keyId`, and the widget runs.
 
 ```jsx
 import { useState } from 'react';
@@ -26,6 +26,7 @@ export default function Checkout() {
     const [result, setResult] = useState(null);
 
     const { open } = useGeophrase({
+        keyId: 'YOUR_API_KEY_ID',   // required — your API key id (both modes)
         mode: 'server',             // widget returns a token your backend exchanges for the address
         theme: 'system',            // 'light' | 'dark' | 'system'
         orderId: 'ORD-98765',       // your internal reference id
@@ -52,13 +53,14 @@ The SDK supports two modes. Pick whichever fits your architecture:
 - **`server`**: the widget returns `{ token }`. Your backend exchanges it for the full address using your API key, which never touches the frontend.
 - **`client`**: the widget resolves the address in the browser and passes it straight to `onSuccess`. Requires `key` in the SDK options.
 
-> Both modes require a Geophrase API key. See [creating and securing an API key](https://geophrase.com/docs/api-keys).
+> Every integration requires your API key id (`keyId`) in the SDK options — it identifies your account to the widget. On top of that, `client` mode needs your secret API key (`key`) in the browser, while `server` mode uses that secret only on your backend. See [creating and securing an API key](https://geophrase.com/docs/api-keys).
 >
-> If your app has a backend, `server` mode keeps your API key entirely off the frontend, which is the most secure option. If you don't have a backend (or want the fastest possible integration), `client` mode with a domain-restricted key is fine.
+> If your app has a backend, `server` mode keeps your secret API key entirely off the frontend, which is the most secure option. If you don't have a backend (or want the fastest possible integration), `client` mode with a domain-restricted key is fine.
 
 ```jsx
 // client mode, no backend integration required
 const { open } = useGeophrase({
+    keyId: 'YOUR_API_KEY_ID',
     mode: 'client',
     key: 'YOUR_API_KEY',
     onSuccess: (address) => setResult(address)
@@ -69,8 +71,9 @@ const { open } = useGeophrase({
 
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
+| `keyId` | `string` | **Yes** | Your 8-character [Geophrase API key id](https://geophrase.com/docs/api-keys). Required in **both** modes; sent to the widget to identify your account. |
 | `mode` | `string` | Optional | `'client'` (default) or `'server'`. Determines the architectural flow of the SDK. |
-| `key` | `string` | **Conditional** | Your [Geophrase API key](https://geophrase.com/docs/api-keys). **Required if `mode` is `'client'`.** Omit if using server mode. |
+| `key` | `string` | **Conditional** | Your secret [Geophrase API key](https://geophrase.com/docs/api-keys). **Required if `mode` is `'client'`.** Omit if using server mode. |
 | `theme` | `string` | Optional | `'light'`, `'dark'`, or `'system'`. Defaults to `'system'`. |
 | `orderId` | `string` | Optional | Your internal reference ID for this checkout session. |
 | `phone` | `string` | Optional | The customer's 10-digit phone number (pre-fills the widget). |
