@@ -33,6 +33,7 @@ export interface GeophraseError {
 }
 
 export interface GeophraseOptions {
+    keyId: string;
     mode?: 'client' | 'server';
     theme?: 'light' | 'dark' | 'system';
     key?: string;

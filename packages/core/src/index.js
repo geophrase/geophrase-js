@@ -14,10 +14,18 @@ class Geophrase {
         // 1. Mode validation
         this.mode = options.mode || 'client';
         if (!['client', 'server'].includes(this.mode)) {
-            throw new Error(`Geophrase: Invalid mode '${this.mode}'. Expected 'client' or 'server'.`);
+            throw new Error(`Geophrase Error: Invalid mode '${this.mode}'. Expected 'client' or 'server'.`);
         }
 
-        // 2. API key validation
+        // 2. Key ID validation — required in every mode; the widget needs it to identify the merchant.
+        if (!options.keyId) {
+            throw new Error("Geophrase Error: 'keyId' is required.");
+        }
+        if (typeof options.keyId !== 'string' || options.keyId.length !== 8) {
+            throw new Error("Geophrase Error: 'keyId' must be an 8-character string.");
+        }
+
+        // 3. API key validation
         if (this.mode === 'client' && !options.key) {
             throw new Error("Geophrase Error: 'key' is required when mode is 'client'.");
         }
@@ -26,11 +34,12 @@ class Geophrase {
             console.warn("Geophrase Warning: 'key' is ignored when mode is 'server'. Ensure you are not exposing a Secret Key in your frontend.");
         }
 
+        this.keyId = options.keyId;
         this.apiKey = this.mode === 'client' ? options.key : null;
         this.orderId = options.orderId;
         this.phone = options.phone;
 
-        // 3. Theme validation
+        // 4. Theme validation
         this.theme = options.theme;
         if (this.theme && !['light', 'dark', 'system'].includes(this.theme)) {
             console.warn(`Geophrase Warning: Invalid theme '${this.theme}'. Falling back to default.`);
@@ -41,13 +50,13 @@ class Geophrase {
         this.onError = options.onError;
         this.onClose = options.onClose;
 
-        // 4. Per-instance DOM IDs so multiple instances don't collide
+        // 5. Per-instance DOM IDs so multiple instances don't collide
         const instanceId = ++Geophrase._instanceCounter;
         this.iframeId = `geophrase-iframe-${instanceId}`;
         this.overlayId = `geophrase-overlay-${instanceId}`;
         this.styleId = `geophrase-styles-${instanceId}`;
 
-        // 5. Endpoints (undocumented override for staging)
+        // 6. Endpoints (undocumented override for staging)
         const endpoints = options._endpoints || {};
         this.widgetOrigin = endpoints.widgetOrigin || 'https://connect.geophrase.com';
         this.apiBase = endpoints.apiBase || 'https://api.geophrase.com';
@@ -57,8 +66,9 @@ class Geophrase {
         // null when not applied; an object of saved values otherwise.
         this._savedHostState = null;
 
-        // 6. Pre-compute the secure widget URL
+        // 7. Pre-compute the secure widget URL
         const url = new URL(this.widgetOrigin);
+        url.searchParams.append('key-id', this.keyId);
         if (this.phone) url.searchParams.append('phone', this.phone);
         if (this.theme) url.searchParams.append('theme', this.theme);
         this.widgetUrl = url.toString();
