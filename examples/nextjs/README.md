@@ -16,13 +16,21 @@ A minimal Next.js application demonstrating how to integrate the `@geophrase/rea
    npm install
    ```
 
-3. **Run the development server**
+3. **Add your API key id**
+
+   The widget will not load without it. Create a key in your [Geophrase dashboard](https://geophrase.com/docs/api-keys), copy its 8-character **key id**, and replace the placeholder `keyId` in `app/page.tsx`:
+
+   ```ts
+   keyId: 'YOUR_API_KEY_ID', // ← replace with your key id
+   ```
+
+4. **Run the development server**
 
    ```bash
    npm run dev
    ```
 
-4. **Try the widget**
+5. **Try the widget**
    Open [http://localhost:3000](http://localhost:3000) and click **"Select Exact Delivery Location"**. Complete the flow and you'll see the returned `{ requestId }` payload rendered on the page.
 
 ## Server vs Client Mode
