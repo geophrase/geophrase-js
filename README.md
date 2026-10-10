@@ -4,6 +4,8 @@ The official JavaScript library for Geophrase Connect. This repository contains 
 
 📖 **[Read the full documentation and integration guide at geophrase.com/docs](https://geophrase.com/docs)**
 
+🗺️ **[How GPS address capture works with couriers or your own riders](https://geophrase.com/features/gps-address-capture)**
+
 Explore fully working demos for Vanilla JS, React, and Next.js in the `/examples` directory.
 
 ---

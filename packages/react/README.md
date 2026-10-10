@@ -4,6 +4,8 @@ The official React and Next.js hook for Geophrase Connect. Drop the Geophrase ad
 
 👉 **[Full documentation and integration guide](https://geophrase.com/docs)**
 
+🗺️ **[How GPS address capture works with couriers or your own riders](https://geophrase.com/features/gps-address-capture)**
+
 ---
 
 ## Install

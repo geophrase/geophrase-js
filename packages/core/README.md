@@ -4,6 +4,8 @@ The core vanilla JavaScript library for Geophrase Connect. Drop the Geophrase ad
 
 👉 **[Full documentation and integration guide](https://geophrase.com/docs/vanilla-js)**
 
+🗺️ **[How GPS address capture works with couriers or your own riders](https://geophrase.com/features/gps-address-capture)**
+
 *Building a React or Next.js app? Use [`@geophrase/react`](https://www.npmjs.com/package/@geophrase/react) instead. It wraps this core library in native hooks.*
 
 ---
