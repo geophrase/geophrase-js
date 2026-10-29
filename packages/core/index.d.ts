@@ -38,6 +38,7 @@ export interface GeophraseOptions {
     theme?: 'light' | 'dark' | 'system';
     key?: string;
     orderId?: string;
+    noteForAgent?: string;
     phone?: string;
     onSuccess: (result: GeophraseAddress | GeophraseRequestId) => void;
     onError?: (error: GeophraseError) => void;

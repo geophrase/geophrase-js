@@ -37,6 +37,7 @@ class Geophrase {
         this.keyId = options.keyId;
         this.apiKey = this.mode === 'client' ? options.key : null;
         this.orderId = options.orderId;
+        this.noteForAgent = options.noteForAgent;
         this.phone = options.phone;
 
         // 4. Theme validation
@@ -336,6 +337,8 @@ class Geophrase {
 
             const payload = { request_id: data.requestId };
             if (this.orderId) payload.order_id = this.orderId;
+            // Cut to the API's limit: a longer note would fail the whole address capture.
+            if (this.noteForAgent) payload.note_for_agent = String(this.noteForAgent).slice(0, 300);
 
             try {
                 const response = await fetch(`${this.apiBase}/business/resolve/`, {
