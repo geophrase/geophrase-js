@@ -15,7 +15,7 @@ function App() {
     theme: 'system',        // Optional. 'light' | 'dark' | 'system' (default)
 
     orderId: 'ORD-98765', // Optional
-    phone: '9999999999',  // Optional. Prefill the account phone number
+    phone: '9999999999',  // Optional; prefills the phone field
     onSuccess: (data) => {
       // client mode → parsed address JSON
       // server mode → { token: "..." }. POST this to your backend

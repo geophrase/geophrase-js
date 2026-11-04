@@ -42,7 +42,7 @@ The snippet below uses `mode: 'server'`, which needs only your API key id — no
             mode: 'server',             // widget returns a token your backend exchanges for the address
             theme: 'system',            // 'light' | 'dark' | 'system'
             orderId: 'ORD-98765',       // your internal reference id
-            phone: '9999999999',        // pre-fill the customer phone
+            phone: '9999999999',        // prefills the phone field
 
             onSuccess: (result) => console.log('Success:', result),
             onError:   (error)  => console.error('Error:', error.message),
@@ -86,7 +86,7 @@ const geo = new Geophrase({
 | `theme`     | `string`   | Optional        | `'light'`, `'dark'`, or `'system'`. Defaults to `'system'`.  |
 | `orderId`   | `string`   | Optional        | Your internal reference ID for this checkout session.        |
 | `noteForAgent` | `string` | Optional       | Note shown to your delivery agent, never to the customer. Client mode only; notes over 300 characters are cut. It is sent from the customer's device, so the customer can change it; send payment instructions, such as cash to collect, from your server or the dashboard. In server mode, send `note_for_agent` with your [resolve call](https://geophrase.com/docs/resolve-endpoint). |
-| `phone`     | `string`   | Optional        | The customer's 10-digit phone number (pre-fills the widget). |
+| `phone`     | `string`   | Optional        | Pre-fills the phone field with a 10-digit Indian mobile number. |
 | `onSuccess` | `function` | **Yes**         | Called upon completion. Returns an `Address` object (`mode: 'client'`) or a `Token` object (`mode: 'server'`). |
 | `onError`   | `function` | Optional        | Called if the API fails or a network error occurs. Returns an `Error` object. |
 | `onClose`   | `function` | Optional        | Called when the user closes the modal without completing the flow. |

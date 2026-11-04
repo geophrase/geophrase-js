@@ -18,7 +18,7 @@ export default function Home() {
         theme: 'system',        // Optional. 'light' | 'dark' | 'system' (default)
 
         orderId: 'ORD-98765', // Optional
-        phone: '9999999999',  // Optional. Prefill the account phone number
+        phone: '9999999999',  // Optional; prefills the phone field
         onSuccess: (data) => {
             // In 'server' mode, data is a GeophraseRequestId. POST it to your backend to resolve.
             const payload = data as GeophraseRequestId;
