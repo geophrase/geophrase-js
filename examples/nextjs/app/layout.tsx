@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Geophrase Next.js Example",
+  title: "Geophrase Next.js example",
   description: "Minimal Next.js integration of the @geophrase/react SDK.",
 };
 

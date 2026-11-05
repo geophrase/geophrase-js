@@ -31,7 +31,7 @@ A minimal Next.js application demonstrating how to integrate the `@geophrase/rea
    ```
 
 5. **Try the widget**
-   Open [http://localhost:3000](http://localhost:3000) and click **"Select Exact Delivery Location"**. Complete the flow and you'll see the returned `{ requestId }` payload rendered on the page.
+   Open [http://localhost:3000](http://localhost:3000) and click **"Select exact delivery location"**. Complete the flow and you'll see the returned `{ requestId }` payload rendered on the page.
 
 ## Server vs Client Mode
 

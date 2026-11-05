@@ -28,7 +28,7 @@ function App() {
 
   return (
       <div>
-        <button onClick={open}>Select Exact Delivery Location</button>
+        <button onClick={open}>Select exact delivery location</button>
         {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
       </div>
   )

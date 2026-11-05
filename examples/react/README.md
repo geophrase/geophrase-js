@@ -30,7 +30,7 @@ A minimal React application demonstrating how to integrate the `@geophrase/react
    ```
 
 5. **Try the widget**
-   Open the local URL Vite prints (typically `http://localhost:5173`) and click **"Select Exact Delivery Location"**. Complete the flow and you'll see the returned `{ token }` payload rendered on the page.
+   Open the local URL Vite prints (typically `http://localhost:5173`) and click **"Select exact delivery location"**. Complete the flow and you'll see the returned `{ token }` payload rendered on the page.
 
 ## Server vs Client Mode
 
